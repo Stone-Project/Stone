@@ -1,0 +1,15 @@
+[project]
+name = "stone"
+version = "0.1.0"
+description = "High-level portable code layer with semantic hashing"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+dependencies = [
+    "tree-sitter>=0.21.0",      # for parsing
+    "tree-sitter-python",
+    "tree-sitter-c",
+]
+
+[project.scripts]
+stone = "stone.cli:main"
