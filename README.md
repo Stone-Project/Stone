@@ -15,3 +15,13 @@ Stone is a high-level portable code layer that automatically converts functions 
 # After installation
 stone intent "safe fast inverse square root for low-power hardware"
 stone hash-function my_hot_function.py
+
+Project Status (April 2026)
+
+Auto-hasher MVP in progress
+Basic library structure defined
+Focused on correctness, performance, and portability
+
+Vision
+A global library where developers and LLMs contribute optimized functions. Long complex logic shrinks to a single reliable hash. Future applications include high-performance games, simulations, embedded systems, and cross-platform engines.
+Stone is fully open source (MIT).
