@@ -21,3 +21,13 @@ Thank you for considering a contribution!
 git clone https://github.com/stone-lang/stone.git
 cd stone
 pip install -e .
+Then run:
+Bashstone hash-function examples/test_func.py
+We welcome:
+
+New hashed functions
+Improvements to the hasher
+Better tests and benchmarks
+Documentation
+
+Thank you for helping build a better optimization layer.
