@@ -1,3 +1,4 @@
+# Stone library module - versioned hashing + storage
 import json
 import os
 from datetime import datetime, timezone
