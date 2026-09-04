@@ -26,7 +26,7 @@ def load_hash(content_hash: str):
     except Exception:
         return None
 
-def save_hash(content_hash: str, source_file: str, normalized_code: str, test_results: dict):
+def save_hash(content_hash: str, source_file: str, normalized_code: str, test_results: dict, function_name: str = "unknown"):
     """
     Save a successful hash entry.
     Returns: (filepath, short_id, already_existed)
@@ -44,6 +44,7 @@ def save_hash(content_hash: str, source_file: str, normalized_code: str, test_re
         "version": HASH_VERSION,
         "content_hash": content_hash,
         "short_id": full_short_id,
+        "function_name": function_name,
         "source_file": source_file,
         "normalized_length": len(normalized_code),
         "tests_passed": test_results.get("passed", 0),

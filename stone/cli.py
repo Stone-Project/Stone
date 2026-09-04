@@ -53,12 +53,15 @@ def main():
         print(f"🔨 Hashing function: {filepath}")
 
         try:
-            code = parse_file(filepath)
-            if not code:
+            parsed = parse_file(filepath)
+            if not parsed:
                 sys.exit(1)
 
+            code = parsed["code"]
+            function_name = parsed["function_name"]
+
             normalized = normalize(code)
-            test_results = run_basic_tests(code, filepath)
+            test_results = run_basic_tests(code, function_name)
 
             if not is_safe_for_hashing(test_results):
                 print("⚠️  Function failed enough tests — not hashing yet.")
@@ -68,7 +71,7 @@ def main():
 
             content_hash = generate_content_hash(normalized)
             saved_path, short_id, already_existed = save_hash(
-                content_hash, filepath, normalized, test_results
+                content_hash, filepath, normalized, test_results, function_name
             )
 
             if already_existed:
@@ -76,6 +79,7 @@ def main():
             else:
                 print("✅ New function added to the library")
 
+            print(f"📦 Function:     {function_name}")
             print(f"🔑 Content hash: {content_hash}")
             print(f"📌 Short ID:     {short_id}")
             print(f"💾 Saved to:     {saved_path}")
@@ -95,6 +99,7 @@ def main():
         print(f"📚 Stone Library ({len(entries)} entries)\n")
         for entry in entries:
             print(f"  {entry.get('short_id')}")
+            print(f"     Function: {entry.get('function_name', 'unknown')}")
             print(f"     Source  : {entry.get('source_file')}")
             print(f"     Status  : {entry.get('status')}  |  Tests: {entry.get('tests_passed')}/{entry.get('tests_total')}")
             print(f"     Version : {entry.get('version', 'unknown')}")
@@ -110,6 +115,7 @@ def main():
             sys.exit(1)
 
         print(f"📌 {entry.get('short_id')}")
+        print(f"📦 Function     : {entry.get('function_name', 'unknown')}")
         print(f"🔑 Content hash : {entry.get('content_hash')}")
         print(f"📁 Source       : {entry.get('source_file')}")
         print(f"✅ Status       : {entry.get('status')}")
