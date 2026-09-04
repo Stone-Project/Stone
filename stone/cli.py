@@ -24,7 +24,7 @@ Usage:
 
 Commands:
   hash-function <file>     Parse, normalize, test, and hash a function
-  list                     Show all hashes currently in the library
+  list [category]          Show hashes, optionally filtered by category
   show <short-id>          Show details for a specific hash
   delete <short-id>        Remove a hash from the library
   intent "description"     (Coming soon) Search by natural language intent
@@ -33,10 +33,27 @@ Commands:
 Examples:
   python -m stone.cli hash-function examples/test_func.py
   python -m stone.cli list
+  python -m stone.cli list math
   python -m stone.cli show stone-v1:9b04fb6195afe000
   python -m stone.cli delete stone-v1:9b04fb6195afe000
   python -m stone.cli help
 """)
+
+def print_entries(entries):
+    if not entries:
+        print("📭 No matching hashes.")
+        return
+
+    print(f"📚 Stone Library ({len(entries)} entries)\n")
+    for entry in entries:
+        print(f"  {entry.get('short_id')}")
+        print(f"     Function: {entry.get('function_name', 'unknown')}")
+        print(f"     Category: {entry.get('category', 'unknown')}")
+        print(f"     Source  : {entry.get('source_file')}")
+        print(f"     Status  : {entry.get('status')}  |  Tests: {entry.get('tests_passed')}/{entry.get('tests_total')}")
+        print(f"     Version : {entry.get('version', 'unknown')}")
+        print(f"     Updated : {entry.get('updated_at', entry.get('created_at'))}")
+        print()
 
 def main():
     if len(sys.argv) < 2:
@@ -95,20 +112,11 @@ def main():
 
     elif cmd == "list":
         entries = list_hashes()
-        if not entries:
-            print("📭 Library is empty.")
-            return
-
-        print(f"📚 Stone Library ({len(entries)} entries)\n")
-        for entry in entries:
-            print(f"  {entry.get('short_id')}")
-            print(f"     Function: {entry.get('function_name', 'unknown')}")
-            print(f"     Category: {entry.get('category', 'unknown')}")
-            print(f"     Source  : {entry.get('source_file')}")
-            print(f"     Status  : {entry.get('status')}  |  Tests: {entry.get('tests_passed')}/{entry.get('tests_total')}")
-            print(f"     Version : {entry.get('version', 'unknown')}")
-            print(f"     Updated : {entry.get('updated_at', entry.get('created_at'))}")
-            print()
+        if len(sys.argv) > 2:
+            category = sys.argv[2].lower()
+            entries = [e for e in entries if e.get("category", "").lower() == category]
+            print(f"🔎 Filter: {category}")
+        print_entries(entries)
 
     elif cmd == "show" and len(sys.argv) > 2:
         short_id = sys.argv[2]
