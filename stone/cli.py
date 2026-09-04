@@ -8,6 +8,7 @@ from .hasher.parser import parse_file
 from .hasher.normalizer import normalize
 from .hasher.tester import run_basic_tests, is_safe_for_hashing
 from .hasher.library import save_hash, list_hashes, get_by_short_id, delete_hash
+from .hasher.categorize import guess_category
 
 def generate_content_hash(normalized_code: str) -> str:
     """Create a stable SHA-256 hash of the normalized code."""
@@ -59,6 +60,7 @@ def main():
 
             code = parsed["code"]
             function_name = parsed["function_name"]
+            category = guess_category(function_name, filepath, code)
 
             normalized = normalize(code)
             test_results = run_basic_tests(code, function_name)
@@ -71,7 +73,7 @@ def main():
 
             content_hash = generate_content_hash(normalized)
             saved_path, short_id, already_existed = save_hash(
-                content_hash, filepath, normalized, test_results, function_name
+                content_hash, filepath, normalized, test_results, function_name, category
             )
 
             if already_existed:
@@ -80,6 +82,7 @@ def main():
                 print("✅ New function added to the library")
 
             print(f"📦 Function:     {function_name}")
+            print(f"📂 Category:     {category}")
             print(f"🔑 Content hash: {content_hash}")
             print(f"📌 Short ID:     {short_id}")
             print(f"💾 Saved to:     {saved_path}")
@@ -100,6 +103,7 @@ def main():
         for entry in entries:
             print(f"  {entry.get('short_id')}")
             print(f"     Function: {entry.get('function_name', 'unknown')}")
+            print(f"     Category: {entry.get('category', 'unknown')}")
             print(f"     Source  : {entry.get('source_file')}")
             print(f"     Status  : {entry.get('status')}  |  Tests: {entry.get('tests_passed')}/{entry.get('tests_total')}")
             print(f"     Version : {entry.get('version', 'unknown')}")
@@ -116,6 +120,7 @@ def main():
 
         print(f"📌 {entry.get('short_id')}")
         print(f"📦 Function     : {entry.get('function_name', 'unknown')}")
+        print(f"📂 Category     : {entry.get('category', 'unknown')}")
         print(f"🔑 Content hash : {entry.get('content_hash')}")
         print(f"📁 Source       : {entry.get('source_file')}")
         print(f"✅ Status       : {entry.get('status')}")
