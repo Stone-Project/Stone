@@ -4,7 +4,6 @@ import re
 def parse_file(filepath: str):
     """
     Read a source file and extract a basic function name if possible.
-    Still simple — real AST parsing can come later.
     Returns: {"code": str, "function_name": str} or None
     """
     try:
@@ -12,23 +11,23 @@ def parse_file(filepath: str):
             content = f.read()
 
         if not content.strip():
-            print("❌ File is empty")
+            print("Error: file is empty")
             return None
 
         function_name = extract_function_name(content, filepath)
 
-        print(f"📄 Parsed {filepath} ({len(content)} characters)")
-        print(f"📦 Function name: {function_name}")
+        print(f"Parsed {filepath} ({len(content)} characters)")
+        print(f"Function name: {function_name}")
         return {
             "code": content,
             "function_name": function_name
         }
 
     except FileNotFoundError:
-        print(f"❌ File not found: {filepath}")
+        print(f"Error: file not found: {filepath}")
         return None
     except Exception as e:
-        print(f"❌ Failed to read file: {e}")
+        print(f"Error: failed to read file: {e}")
         return None
 
 def extract_function_name(code: str, filepath: str) -> str:

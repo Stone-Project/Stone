@@ -4,7 +4,7 @@ import traceback
 
 def run_basic_tests(code: str, function_name: str = "unknown"):
     """Run basic correctness and sanity tests on the function."""
-    print(f"🧪 Running basic tests for {function_name}...")
+    print(f"Running basic tests for {function_name}...")
 
     results = {
         "passed": 0,
@@ -14,24 +14,21 @@ def run_basic_tests(code: str, function_name: str = "unknown"):
     }
 
     try:
-        # Test 1: Code is not empty / too short
         results["total"] += 1
         if len(code.strip()) > 20:
             results["passed"] += 1
-            results["details"].append("✅ Code length check passed")
+            results["details"].append("Code length check passed")
         else:
-            results["details"].append("❌ Code too short")
+            results["details"].append("Code too short")
 
-        # Test 2: Looks like it contains a function definition
         results["total"] += 1
         lower = code.lower()
         if "def " in code or "function " in lower or "fn " in lower:
             results["passed"] += 1
-            results["details"].append("✅ Contains function definition")
+            results["details"].append("Contains function definition")
         else:
-            results["details"].append("⚠️ No obvious function definition found")
+            results["details"].append("No obvious function definition found")
 
-        # Test 3: Not just comments or whitespace
         results["total"] += 1
         code_without_comments = "\n".join(
             line for line in code.splitlines()
@@ -39,31 +36,30 @@ def run_basic_tests(code: str, function_name: str = "unknown"):
         )
         if len(code_without_comments.strip()) > 15:
             results["passed"] += 1
-            results["details"].append("✅ Contains real code (not only comments)")
+            results["details"].append("Contains real code (not only comments)")
         else:
-            results["details"].append("❌ Appears to be mostly comments or empty")
+            results["details"].append("Appears to be mostly comments or empty")
 
-        # Test 4: Try to import a Python function if we know the name
         results["total"] += 1
         executed = try_import_python_function(function_name)
         if executed:
             results["passed"] += 1
             results["executed"] = True
-            results["details"].append("✅ Python function imported successfully")
+            results["details"].append("Python function imported successfully")
         else:
-            results["details"].append("⚠️ Could not execute/import function yet")
+            results["details"].append("Could not execute/import function yet")
 
-        print(f"🧪 Tests passed: {results['passed']}/{results['total']}")
+        print(f"Tests passed: {results['passed']}/{results['total']}")
         return results
 
     except Exception as e:
-        print(f"❌ Tester error: {e}")
+        print(f"Tester error: {e}")
         return {"passed": 0, "total": 1, "details": [f"Error: {e}"], "executed": False}
 
 def try_import_python_function(function_name: str) -> bool:
     """
-    Best-effort import test for examples/test_func.py style files.
-    This is still early and limited on purpose.
+    Best-effort import test for local trusted example files only.
+    Do not use this as-is on untrusted uploaded code.
     """
     candidate = os.path.join("examples", "test_func.py")
     if not os.path.exists(candidate):

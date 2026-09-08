@@ -41,10 +41,10 @@ Examples:
 
 def print_entries(entries):
     if not entries:
-        print("📭 No matching hashes.")
+        print("No matching hashes.")
         return
 
-    print(f"📚 Stone Library ({len(entries)} entries)\n")
+    print(f"Stone Library ({len(entries)} entries)\n")
     for entry in entries:
         print(f"  {entry.get('short_id')}")
         print(f"     Function: {entry.get('function_name', 'unknown')}")
@@ -68,7 +68,7 @@ def main():
 
     if cmd == "hash-function" and len(sys.argv) > 2:
         filepath = sys.argv[2]
-        print(f"🔨 Hashing function: {filepath}")
+        print(f"Hashing function: {filepath}")
 
         try:
             parsed = parse_file(filepath)
@@ -83,7 +83,7 @@ def main():
             test_results = run_basic_tests(code, function_name)
 
             if not is_safe_for_hashing(test_results):
-                print("⚠️  Function failed enough tests — not hashing yet.")
+                print("Function failed enough tests — not hashing yet.")
                 for detail in test_results.get("details", []):
                     print(f"   {detail}")
                 sys.exit(1)
@@ -94,18 +94,18 @@ def main():
             )
 
             if already_existed:
-                print("♻️  This function already exists in the library (same content hash)")
+                print("This function already exists in the library (same content hash)")
             else:
-                print("✅ New function added to the library")
+                print("New function added to the library")
 
-            print(f"📦 Function:     {function_name}")
-            print(f"📂 Category:     {category}")
-            print(f"🔑 Content hash: {content_hash}")
-            print(f"📌 Short ID:     {short_id}")
-            print(f"💾 Saved to:     {saved_path}")
+            print(f"Function:     {function_name}")
+            print(f"Category:     {category}")
+            print(f"Content hash: {content_hash}")
+            print(f"Short ID:     {short_id}")
+            print(f"Saved to:     {saved_path}")
 
         except Exception as e:
-            print(f"❌ Error: {e}")
+            print(f"Error: {e}")
             print("\n--- Debug traceback ---")
             traceback.print_exc()
             sys.exit(1)
@@ -115,7 +115,7 @@ def main():
         if len(sys.argv) > 2:
             category = sys.argv[2].lower()
             entries = [e for e in entries if e.get("category", "").lower() == category]
-            print(f"🔎 Filter: {category}")
+            print(f"Filter: {category}")
         print_entries(entries)
 
     elif cmd == "show" and len(sys.argv) > 2:
@@ -123,35 +123,35 @@ def main():
         entry = get_by_short_id(short_id)
 
         if not entry:
-            print(f"❌ No entry found for: {short_id}")
+            print(f"No entry found for: {short_id}")
             sys.exit(1)
 
-        print(f"📌 {entry.get('short_id')}")
-        print(f"📦 Function     : {entry.get('function_name', 'unknown')}")
-        print(f"📂 Category     : {entry.get('category', 'unknown')}")
-        print(f"🔑 Content hash : {entry.get('content_hash')}")
-        print(f"📁 Source       : {entry.get('source_file')}")
-        print(f"✅ Status       : {entry.get('status')}")
-        print(f"🧪 Tests        : {entry.get('tests_passed')}/{entry.get('tests_total')}")
-        print(f"📅 Created      : {entry.get('created_at')}")
-        print(f"🔄 Updated      : {entry.get('updated_at')}")
+        print(f"{entry.get('short_id')}")
+        print(f"Function     : {entry.get('function_name', 'unknown')}")
+        print(f"Category     : {entry.get('category', 'unknown')}")
+        print(f"Content hash : {entry.get('content_hash')}")
+        print(f"Source       : {entry.get('source_file')}")
+        print(f"Status       : {entry.get('status')}")
+        print(f"Tests        : {entry.get('tests_passed')}/{entry.get('tests_total')}")
+        print(f"Created      : {entry.get('created_at')}")
+        print(f"Updated      : {entry.get('updated_at')}")
         if entry.get("seen_sources"):
-            print(f"👀 Seen in      : {', '.join(entry.get('seen_sources'))}")
+            print(f"Seen in      : {', '.join(entry.get('seen_sources'))}")
 
     elif cmd == "delete" and len(sys.argv) > 2:
         short_id = sys.argv[2]
         success = delete_hash(short_id)
 
         if success:
-            print(f"🗑️  Deleted: {short_id}")
+            print(f"Deleted: {short_id}")
         else:
-            print(f"❌ Could not find or delete: {short_id}")
+            print(f"Could not find or delete: {short_id}")
             sys.exit(1)
 
     elif cmd == "intent" and len(sys.argv) > 2:
         description = " ".join(sys.argv[2:])
-        print(f"💡 Intent: {description}")
-        print("🔍 (Search not implemented yet)")
+        print(f"Intent: {description}")
+        print("(Search not implemented yet)")
 
     else:
         print("Unknown command.\n")
