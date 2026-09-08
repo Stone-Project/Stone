@@ -11,7 +11,6 @@ from .hasher.library import save_hash, list_hashes, get_by_short_id, delete_hash
 from .hasher.categorize import guess_category
 
 def generate_content_hash(normalized_code: str) -> str:
-    """Create a stable SHA-256 hash of the normalized code."""
     return hashlib.sha256(normalized_code.encode("utf-8")).hexdigest()
 
 def print_help():
@@ -35,7 +34,6 @@ Examples:
   python -m stone.cli list
   python -m stone.cli list math
   python -m stone.cli show stone-v1:9b04fb6195afe000
-  python -m stone.cli delete stone-v1:9b04fb6195afe000
   python -m stone.cli help
 """)
 
@@ -47,12 +45,12 @@ def print_entries(entries):
     print(f"Stone Library ({len(entries)} entries)\n")
     for entry in entries:
         print(f"  {entry.get('short_id')}")
+        print(f"     Name    : {entry.get('hierarchical_name', 'n/a')}")
         print(f"     Function: {entry.get('function_name', 'unknown')}")
         print(f"     Category: {entry.get('category', 'unknown')}")
         print(f"     Source  : {entry.get('source_file')}")
         print(f"     Status  : {entry.get('status')}  |  Tests: {entry.get('tests_passed')}/{entry.get('tests_total')}")
         print(f"     Version : {entry.get('version', 'unknown')}")
-        print(f"     Updated : {entry.get('updated_at', entry.get('created_at'))}")
         print()
 
 def main():
@@ -89,7 +87,7 @@ def main():
                 sys.exit(1)
 
             content_hash = generate_content_hash(normalized)
-            saved_path, short_id, already_existed = save_hash(
+            saved_path, short_id, already_existed, hierarchical_name = save_hash(
                 content_hash, filepath, normalized, test_results, function_name, category
             )
 
@@ -100,6 +98,7 @@ def main():
 
             print(f"Function:     {function_name}")
             print(f"Category:     {category}")
+            print(f"Name:         {hierarchical_name}")
             print(f"Content hash: {content_hash}")
             print(f"Short ID:     {short_id}")
             print(f"Saved to:     {saved_path}")
@@ -127,6 +126,7 @@ def main():
             sys.exit(1)
 
         print(f"{entry.get('short_id')}")
+        print(f"Name         : {entry.get('hierarchical_name', 'n/a')}")
         print(f"Function     : {entry.get('function_name', 'unknown')}")
         print(f"Category     : {entry.get('category', 'unknown')}")
         print(f"Content hash : {entry.get('content_hash')}")
@@ -141,7 +141,6 @@ def main():
     elif cmd == "delete" and len(sys.argv) > 2:
         short_id = sys.argv[2]
         success = delete_hash(short_id)
-
         if success:
             print(f"Deleted: {short_id}")
         else:

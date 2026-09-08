@@ -10,6 +10,11 @@ def ensure_library_dir():
     os.makedirs(LIBRARY_DIR, exist_ok=True)
     return LIBRARY_DIR
 
+def make_hierarchical_name(category: str, function_name: str) -> str:
+    cat = (category or "unknown").strip().lower().replace(" ", "_")
+    name = (function_name or "unknown").strip().lower().replace(" ", "_")
+    return f"stone:{cat}.{name}"
+
 def get_hash_path(content_hash: str) -> str:
     short_id = content_hash[:16]
     return os.path.join(LIBRARY_DIR, f"{short_id}.json")
@@ -29,6 +34,7 @@ def save_hash(content_hash: str, source_file: str, normalized_code: str, test_re
 
     short_id = content_hash[:16]
     full_short_id = f"stone-{HASH_VERSION}:{short_id}"
+    hierarchical_name = make_hierarchical_name(category, function_name)
     filepath = get_hash_path(content_hash)
 
     already_existed = os.path.exists(filepath)
@@ -38,6 +44,7 @@ def save_hash(content_hash: str, source_file: str, normalized_code: str, test_re
         "version": HASH_VERSION,
         "content_hash": content_hash,
         "short_id": full_short_id,
+        "hierarchical_name": hierarchical_name,
         "function_name": function_name,
         "category": category,
         "source_file": source_file,
@@ -53,7 +60,7 @@ def save_hash(content_hash: str, source_file: str, normalized_code: str, test_re
     with open(filepath, "w", encoding="utf-8") as f:
         json.dump(entry, f, indent=2)
 
-    return filepath, full_short_id, already_existed
+    return filepath, full_short_id, already_existed, hierarchical_name
 
 def list_hashes():
     ensure_library_dir()
