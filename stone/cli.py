@@ -13,6 +13,12 @@ from .hasher.categorize import guess_category
 def generate_content_hash(normalized_code: str) -> str:
     return hashlib.sha256(normalized_code.encode("utf-8")).hexdigest()
 
+def extract_intent(argv):
+    if "--intent" not in argv:
+        return ""
+    idx = argv.index("--intent")
+    return " ".join(argv[idx + 1:]).strip()
+
 def print_help():
     print("""
 Stone - Semantic Function Hashing CLI
@@ -22,19 +28,18 @@ Usage:
   python -m stone.cli <command> [arguments]
 
 Commands:
-  hash-function <file>     Parse, normalize, test, and hash a function
-  list [category]          Show hashes, optionally filtered by category
-  show <short-id>          Show details for a specific hash
-  delete <short-id>        Remove a hash from the library
-  intent "description"     (Coming soon) Search by natural language intent
-  help                     Show this help message
+  hash-function <file> [--intent "what it does"]
+  list [category]
+  show <short-id>
+  delete <short-id>
+  intent "description"     Search by intent (not implemented yet)
+  help
 
 Examples:
   python -m stone.cli hash-function examples/test_func.py
-  python -m stone.cli list
+  python -m stone.cli hash-function examples/test_func.py --intent "fast inverse square root"
   python -m stone.cli list math
   python -m stone.cli show stone-v1:9b04fb6195afe000
-  python -m stone.cli help
 """)
 
 def print_entries(entries):
@@ -48,9 +53,10 @@ def print_entries(entries):
         print(f"     Name    : {entry.get('hierarchical_name', 'n/a')}")
         print(f"     Function: {entry.get('function_name', 'unknown')}")
         print(f"     Category: {entry.get('category', 'unknown')}")
+        if entry.get("intent"):
+            print(f"     Intent  : {entry.get('intent')}")
         print(f"     Source  : {entry.get('source_file')}")
         print(f"     Status  : {entry.get('status')}  |  Tests: {entry.get('tests_passed')}/{entry.get('tests_total')}")
-        print(f"     Version : {entry.get('version', 'unknown')}")
         print()
 
 def main():
@@ -66,6 +72,7 @@ def main():
 
     if cmd == "hash-function" and len(sys.argv) > 2:
         filepath = sys.argv[2]
+        intent = extract_intent(sys.argv)
         print(f"Hashing function: {filepath}")
 
         try:
@@ -88,7 +95,7 @@ def main():
 
             content_hash = generate_content_hash(normalized)
             saved_path, short_id, already_existed, hierarchical_name = save_hash(
-                content_hash, filepath, normalized, test_results, function_name, category
+                content_hash, filepath, normalized, test_results, function_name, category, intent
             )
 
             if already_existed:
@@ -99,6 +106,8 @@ def main():
             print(f"Function:     {function_name}")
             print(f"Category:     {category}")
             print(f"Name:         {hierarchical_name}")
+            if intent:
+                print(f"Intent:       {intent}")
             print(f"Content hash: {content_hash}")
             print(f"Short ID:     {short_id}")
             print(f"Saved to:     {saved_path}")
@@ -129,6 +138,7 @@ def main():
         print(f"Name         : {entry.get('hierarchical_name', 'n/a')}")
         print(f"Function     : {entry.get('function_name', 'unknown')}")
         print(f"Category     : {entry.get('category', 'unknown')}")
+        print(f"Intent       : {entry.get('intent', '')}")
         print(f"Content hash : {entry.get('content_hash')}")
         print(f"Source       : {entry.get('source_file')}")
         print(f"Status       : {entry.get('status')}")

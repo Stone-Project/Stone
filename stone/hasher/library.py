@@ -29,7 +29,15 @@ def load_hash(content_hash: str):
     except Exception:
         return None
 
-def save_hash(content_hash: str, source_file: str, normalized_code: str, test_results: dict, function_name: str = "unknown", category: str = "unknown"):
+def save_hash(
+    content_hash: str,
+    source_file: str,
+    normalized_code: str,
+    test_results: dict,
+    function_name: str = "unknown",
+    category: str = "unknown",
+    intent: str = "",
+):
     ensure_library_dir()
 
     short_id = content_hash[:16]
@@ -40,6 +48,9 @@ def save_hash(content_hash: str, source_file: str, normalized_code: str, test_re
     already_existed = os.path.exists(filepath)
     existing = load_hash(content_hash) if already_existed else None
 
+    if not intent and existing:
+        intent = existing.get("intent", "")
+
     entry = {
         "version": HASH_VERSION,
         "content_hash": content_hash,
@@ -47,6 +58,7 @@ def save_hash(content_hash: str, source_file: str, normalized_code: str, test_re
         "hierarchical_name": hierarchical_name,
         "function_name": function_name,
         "category": category,
+        "intent": intent,
         "source_file": source_file,
         "normalized_length": len(normalized_code),
         "tests_passed": test_results.get("passed", 0),
