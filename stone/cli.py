@@ -2,6 +2,8 @@
 """Stone CLI"""
 
 import sys
+import os
+import json
 import hashlib
 import traceback
 from .hasher.parser import parse_file
@@ -34,6 +36,7 @@ Commands:
   delete <short-id>
   intent "description"     Search hashes by intent/name/category
   publish <short-id>       Not enabled yet (local library only)
+  packs                    List local pack files
   help
 
 Examples:
@@ -158,6 +161,30 @@ def main():
         else:
             print(f"Could not find or delete: {short_id}")
             sys.exit(1)
+
+    elif cmd == "packs":
+        pack_dir = os.path.join(os.getcwd(), "packs")
+        if not os.path.isdir(pack_dir):
+            print("No packs directory found.")
+            return
+        files = [f for f in os.listdir(pack_dir) if f.endswith(".json")]
+        if not files:
+            print("No pack files found.")
+            return
+        print(f"Stone Packs ({len(files)})\n")
+        for name in sorted(files):
+            path = os.path.join(pack_dir, name)
+            try:
+                with open(path, "r", encoding="utf-8") as f:
+                    pack = json.load(f)
+                print(f"  {pack.get('pack', name)}")
+                print(f"     File   : {name}")
+                print(f"     About  : {pack.get('description', '')}")
+                for item in pack.get("order", []):
+                    print(f"     - {item}")
+                print()
+            except Exception as e:
+                print(f"  {name}: could not read ({e})")
 
     elif cmd == "publish":
         target = sys.argv[2] if len(sys.argv) > 2 else ""
