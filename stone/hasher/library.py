@@ -146,3 +146,18 @@ def search_by_intent(query: str):
 
     results.sort(key=lambda e: (e.get("_score", 0), e.get("updated_at", "")), reverse=True)
     return results
+
+def find_by_name(name: str):
+    """Find a library entry by hierarchical name, short id, or function name."""
+    needle = (name or "").strip().lower()
+    if not needle:
+        return None
+    for entry in list_hashes():
+        names = [
+            str(entry.get("hierarchical_name", "")).lower(),
+            str(entry.get("short_id", "")).lower(),
+            str(entry.get("function_name", "")).lower(),
+        ]
+        if needle in names:
+            return entry
+    return None

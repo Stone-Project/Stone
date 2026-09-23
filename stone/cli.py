@@ -9,7 +9,7 @@ import traceback
 from .hasher.parser import parse_file
 from .hasher.normalizer import normalize
 from .hasher.tester import run_basic_tests, is_safe_for_hashing
-from .hasher.library import save_hash, list_hashes, get_by_short_id, delete_hash, search_by_intent, decide_status
+from .hasher.library import save_hash, list_hashes, get_by_short_id, delete_hash, search_by_intent, decide_status, find_by_name
 from .hasher.categorize import guess_category
 
 def generate_content_hash(normalized_code: str) -> str:
@@ -37,6 +37,7 @@ Commands:
   intent "description"     Search hashes by intent/name/category
   publish <short-id>       Not enabled yet (local library only)
   packs                    List local pack files
+  verify [pack-file]       Check pack jobs against the local library
   help
 
 Examples:
@@ -185,6 +186,42 @@ def main():
                 print()
             except Exception as e:
                 print(f"  {name}: could not read ({e})")
+
+    elif cmd == "verify":
+        pack_dir = os.path.join(os.getcwd(), "packs")
+        target = sys.argv[2] if len(sys.argv) > 2 else "math_util.json"
+        path = target if os.path.isfile(target) else os.path.join(pack_dir, target)
+        if not os.path.isfile(path):
+            print(f"Pack not found: {target}")
+            sys.exit(1)
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                pack = json.load(f)
+        except Exception as e:
+            print(f"Could not read pack: {e}")
+            sys.exit(1)
+
+        jobs = pack.get("order", [])
+        print(f"Verify {pack.get('pack', target)}")
+        missing = 0
+        untested = 0
+        for job in jobs:
+            entry = find_by_name(job)
+            if not entry:
+                print(f"MISS  {job}")
+                print("      No local hash. Add the function or pick another backend.")
+                missing += 1
+                continue
+            status = entry.get("status", "unknown")
+            mark = "OK  " if status == "verified_basic" else "WARN"
+            if status != "verified_basic":
+                untested += 1
+            print(f"{mark}  {job}")
+            print(f"      {entry.get('short_id')}  status={status}")
+        print(f"\nMissing: {missing}  Untested: {untested}  Checked: {len(jobs)}")
+        if missing:
+            print("Verify failed. Offer missing code; do not auto-download.")
+            sys.exit(1)
 
     elif cmd == "publish":
         target = sys.argv[2] if len(sys.argv) > 2 else ""
