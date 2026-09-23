@@ -2,7 +2,7 @@ import importlib.util
 import os
 import traceback
 
-def run_basic_tests(code: str, function_name: str = "unknown"):
+def run_basic_tests(code: str, function_name: str = "unknown", filepath: str = ""):
     """Run basic correctness and sanity tests on the function."""
     print(f"Running basic tests for {function_name}...")
 
@@ -41,7 +41,7 @@ def run_basic_tests(code: str, function_name: str = "unknown"):
             results["details"].append("Appears to be mostly comments or empty")
 
         results["total"] += 1
-        executed = try_import_python_function(function_name)
+        executed = try_import_python_function(function_name, filepath)
         if executed:
             results["passed"] += 1
             results["executed"] = True
@@ -56,12 +56,12 @@ def run_basic_tests(code: str, function_name: str = "unknown"):
         print(f"Tester error: {e}")
         return {"passed": 0, "total": 1, "details": [f"Error: {e}"], "executed": False}
 
-def try_import_python_function(function_name: str) -> bool:
+def try_import_python_function(function_name: str, filepath: str = "") -> bool:
     """
-    Best-effort import test for local trusted example files only.
+    Best-effort import test for local trusted files only.
     Do not use this as-is on untrusted uploaded code.
     """
-    candidate = os.path.join("examples", "test_func.py")
+    candidate = filepath if filepath and filepath.endswith(".py") else os.path.join("examples", "test_func.py")
     if not os.path.exists(candidate):
         return False
 

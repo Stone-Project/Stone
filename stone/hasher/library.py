@@ -65,7 +65,7 @@ def save_hash(
         "tests_total": test_results.get("total", 0),
         "created_at": existing.get("created_at") if existing else datetime.now(timezone.utc).isoformat(),
         "updated_at": datetime.now(timezone.utc).isoformat(),
-        "status": "verified_basic",
+        "status": decide_status(category, test_results, intent),
         "seen_sources": list(set((existing.get("seen_sources") or []) + [source_file])) if existing else [source_file]
     }
 
@@ -73,6 +73,16 @@ def save_hash(
         json.dump(entry, f, indent=2)
 
     return filepath, full_short_id, already_existed, hierarchical_name
+
+def decide_status(category: str, test_results: dict, intent: str = "") -> str:
+    """verified_basic only when category is known and tests pass. Otherwise untested."""
+    category = (category or "unknown").lower()
+    passed = test_results.get("passed", 0)
+    total = test_results.get("total", 0)
+    strong_tests = total > 0 and passed >= total * 0.7
+    if category not in ("", "unknown") and strong_tests:
+        return "verified_basic"
+    return "untested"
 
 def list_hashes():
     ensure_library_dir()
@@ -111,3 +121,28 @@ def delete_hash(short_id: str) -> bool:
         return True
     except Exception:
         return False
+
+def search_by_intent(query: str):
+    """Simple keyword search across intent, name, function, and category."""
+    q = (query or "").strip().lower()
+    if not q:
+        return []
+
+    words = [w for w in q.replace(":", " ").replace(".", " ").split() if w]
+    results = []
+
+    for entry in list_hashes():
+        haystack = " ".join([
+            str(entry.get("intent", "")),
+            str(entry.get("hierarchical_name", "")),
+            str(entry.get("function_name", "")),
+            str(entry.get("category", "")),
+        ]).lower()
+        score = sum(1 for w in words if w in haystack)
+        if score > 0:
+            item = dict(entry)
+            item["_score"] = score
+            results.append(item)
+
+    results.sort(key=lambda e: (e.get("_score", 0), e.get("updated_at", "")), reverse=True)
+    return results

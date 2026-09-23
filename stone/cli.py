@@ -7,7 +7,7 @@ import traceback
 from .hasher.parser import parse_file
 from .hasher.normalizer import normalize
 from .hasher.tester import run_basic_tests, is_safe_for_hashing
-from .hasher.library import save_hash, list_hashes, get_by_short_id, delete_hash
+from .hasher.library import save_hash, list_hashes, get_by_short_id, delete_hash, search_by_intent, decide_status
 from .hasher.categorize import guess_category
 
 def generate_content_hash(normalized_code: str) -> str:
@@ -32,7 +32,8 @@ Commands:
   list [category]
   show <short-id>
   delete <short-id>
-  intent "description"     Search by intent (not implemented yet)
+  intent "description"     Search hashes by intent/name/category
+  publish <short-id>       Not enabled yet (local library only)
   help
 
 Examples:
@@ -85,7 +86,7 @@ def main():
             category = guess_category(function_name, filepath, code)
 
             normalized = normalize(code)
-            test_results = run_basic_tests(code, function_name)
+            test_results = run_basic_tests(code, function_name, filepath)
 
             if not is_safe_for_hashing(test_results):
                 print("Function failed enough tests — not hashing yet.")
@@ -106,6 +107,7 @@ def main():
             print(f"Function:     {function_name}")
             print(f"Category:     {category}")
             print(f"Name:         {hierarchical_name}")
+            print(f"Status:       {decide_status(category, test_results, intent)}")
             if intent:
                 print(f"Intent:       {intent}")
             print(f"Content hash: {content_hash}")
@@ -157,10 +159,19 @@ def main():
             print(f"Could not find or delete: {short_id}")
             sys.exit(1)
 
+    elif cmd == "publish":
+        target = sys.argv[2] if len(sys.argv) > 2 else ""
+        print("Publish is not enabled.")
+        print("Failed or unreviewed code will not be uploaded.")
+        if target:
+            print(f"Requested: {target}")
+        print("Use local save only until review and license checks exist.")
+
     elif cmd == "intent" and len(sys.argv) > 2:
         description = " ".join(sys.argv[2:])
-        print(f"Intent: {description}")
-        print("(Search not implemented yet)")
+        print(f"Intent search: {description}")
+        matches = search_by_intent(description)
+        print_entries(matches)
 
     else:
         print("Unknown command.\n")
