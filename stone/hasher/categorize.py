@@ -5,7 +5,7 @@ def guess_category(function_name: str, filepath: str = "", code: str = "") -> st
     rules = [
         ("math", ["sqrt", "sin", "cos", "tan", "pow", "log", "inv", "vector", "matrix", "lerp", "saturate", "map_range"]),
         ("render", ["draw", "render", "pixel", "texture", "light", "column", "span", "shader"]),
-        ("physics", ["gravity", "velocity", "collision", "impulse", "rigid", "explode"]),
+        ("physics", ["gravity", "velocity", "collision", "impulse", "rigid", "explode", "aabb", "overlap"]),
         ("audio", ["sound", "audio", "mix", "sample", "wav"]),
         ("input", ["key", "mouse", "gamepad", "input"]),
         ("util", ["hash", "copy", "clamp", "parse", "normalize"]),

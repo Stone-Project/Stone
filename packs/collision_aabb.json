@@ -1,0 +1,8 @@
+{
+  "pack": "stone:pack.collision_aabb",
+  "description": "Basic axis-aligned box overlap",
+  "order": [
+    "stone:physics.aabb_overlap"
+  ],
+  "notes": "First physics pack. Atoms stay separate."
+}
