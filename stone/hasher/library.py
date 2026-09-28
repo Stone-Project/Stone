@@ -37,6 +37,7 @@ def save_hash(
     function_name: str = "unknown",
     category: str = "unknown",
     intent: str = "",
+    depends_on: list | None = None,
 ):
     ensure_library_dir()
 
@@ -50,6 +51,8 @@ def save_hash(
 
     if not intent and existing:
         intent = existing.get("intent", "")
+    if not depends_on:
+        depends_on = existing.get("depends_on", []) if existing else []
 
     entry = {
         "version": HASH_VERSION,
@@ -59,6 +62,7 @@ def save_hash(
         "function_name": function_name,
         "category": category,
         "intent": intent,
+        "depends_on": list(depends_on or []),
         "source_file": source_file,
         "normalized_length": len(normalized_code),
         "tests_passed": test_results.get("passed", 0),

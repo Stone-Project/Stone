@@ -4,6 +4,7 @@
   "order": [
     "stone:math.fast_inverse_sqrt",
     "stone:math.lerp",
+    "stone:math.saturate",
     "stone:util.clamp"
   ],
   "notes": "Atoms stay separate. This file only lists run/group order."

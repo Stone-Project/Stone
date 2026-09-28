@@ -3,7 +3,7 @@ def guess_category(function_name: str, filepath: str = "", code: str = "") -> st
     text = f"{function_name} {filepath} {code}".lower()
 
     rules = [
-        ("math", ["sqrt", "sin", "cos", "tan", "pow", "log", "inv", "vector", "matrix", "lerp"]),
+        ("math", ["sqrt", "sin", "cos", "tan", "pow", "log", "inv", "vector", "matrix", "lerp", "saturate"]),
         ("render", ["draw", "render", "pixel", "texture", "light", "column", "span", "shader"]),
         ("physics", ["gravity", "velocity", "collision", "impulse", "rigid", "explode"]),
         ("audio", ["sound", "audio", "mix", "sample", "wav"]),

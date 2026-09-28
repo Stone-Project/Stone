@@ -15,11 +15,22 @@ from .hasher.categorize import guess_category
 def generate_content_hash(normalized_code: str) -> str:
     return hashlib.sha256(normalized_code.encode("utf-8")).hexdigest()
 
+def extract_flag_args(argv, flag):
+    if flag not in argv:
+        return []
+    idx = argv.index(flag)
+    values = []
+    for item in argv[idx + 1:]:
+        if item.startswith("--"):
+            break
+        values.append(item)
+    return values
+
 def extract_intent(argv):
-    if "--intent" not in argv:
-        return ""
-    idx = argv.index("--intent")
-    return " ".join(argv[idx + 1:]).strip()
+    return " ".join(extract_flag_args(argv, "--intent")).strip()
+
+def extract_depends(argv):
+    return extract_flag_args(argv, "--depends")
 
 def print_help():
     print("""
@@ -30,7 +41,7 @@ Usage:
   python -m stone.cli <command> [arguments]
 
 Commands:
-  hash-function <file> [--intent "what it does"]
+  hash-function <file> [--intent "what it does"] [--depends name ...]
   list [category]
   show <short-id>
   delete <short-id>
@@ -78,6 +89,7 @@ def main():
     if cmd == "hash-function" and len(sys.argv) > 2:
         filepath = sys.argv[2]
         intent = extract_intent(sys.argv)
+        depends_on = extract_depends(sys.argv)
         print(f"Hashing function: {filepath}")
 
         try:
@@ -100,7 +112,7 @@ def main():
 
             content_hash = generate_content_hash(normalized)
             saved_path, short_id, already_existed, hierarchical_name = save_hash(
-                content_hash, filepath, normalized, test_results, function_name, category, intent
+                content_hash, filepath, normalized, test_results, function_name, category, intent, depends_on
             )
 
             if already_existed:
@@ -114,6 +126,8 @@ def main():
             print(f"Status:       {decide_status(category, test_results, intent)}")
             if intent:
                 print(f"Intent:       {intent}")
+            if depends_on:
+                print(f"Depends on:   {', '.join(depends_on)}")
             print(f"Content hash: {content_hash}")
             print(f"Short ID:     {short_id}")
             print(f"Saved to:     {saved_path}")
@@ -218,6 +232,13 @@ def main():
                 untested += 1
             print(f"{mark}  {job}")
             print(f"      {entry.get('short_id')}  status={status}")
+            for dep in entry.get("depends_on") or []:
+                dep_entry = find_by_name(dep)
+                if dep_entry:
+                    print(f"      depends OK   {dep}")
+                else:
+                    print(f"      depends MISS {dep}")
+                    missing += 1
         print(f"\nMissing: {missing}  Untested: {untested}  Checked: {len(jobs)}")
         if missing:
             print("Verify failed. Offer missing code; do not auto-download.")
