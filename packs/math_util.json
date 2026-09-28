@@ -3,6 +3,7 @@
   "description": "Small starter pack of common numeric helpers",
   "order": [
     "stone:math.fast_inverse_sqrt",
+    "stone:math.lerp",
     "stone:util.clamp"
   ],
   "notes": "Atoms stay separate. This file only lists run/group order."
