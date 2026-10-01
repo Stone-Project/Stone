@@ -1,27 +1,35 @@
-# Stone
+Stone
 
-**Write once. Hash once. Run optimally everywhere.**
+Write once. Hash the job. Keep the fastest clean backend later.
 
-Stone is a high-level portable code layer that automatically converts functions into stable, semantically-hashed implementations. It picks the fastest, most reliable backend from any language based on real benchmarks and verified tests.
+Stone is a content-addressed function catalog. A hash names one job. Packs group jobs and their order. A runtime that calls those hashes is not built yet.
 
-### Core Philosophy
-- One hash = battle-tested, bug-resistant function
-- Natural language → correct hash (`stone intent "fast inverse square root like Quake"`)
-- Extreme optimization for long, complex functions while respecting native strengths for short ones
-- Hierarchical naming + content hashing (near-zero collision risk)
+What works now
 
-### Quick Start
-```bash
-# After installation
-stone intent "safe fast inverse square root for low-power hardware"
-stone hash-function my_hot_function.py
+python -m stone.cli hash-function examples/heal.py --intent "add health up to a maximum"
+python -m stone.cli list
+python -m stone.cli intent "health"
+python -m stone.cli packs
+python -m stone.cli verify health_basic.json
+python -m stone.cli publish
 
-Project Status (April 2026)
+publish refuses. Failed tests are not hashed. Local library/ stays off GitHub.
 
-Auto-hasher MVP in progress
-Basic library structure defined
-Focused on correctness, performance, and portability
+Add a function
 
-Vision
-A global library where developers and LLMs contribute optimized functions. Long complex logic shrinks to a single reliable hash. Future applications include high-performance games, simulations, embedded systems, and cross-platform engines.
-Stone is fully open source (MIT).
+1. Put one function in examples/your_job.py.
+2. Add examples/your_job.cases.json with inputs and expected results.
+3. Hash it:
+
+python -m stone.cli hash-function examples/your_job.py --intent "what this job does" --depends stone:math.lerp
+
+4. If it belongs with other jobs, add the hierarchical name to a file in packs/.
+5. Run python -m stone.cli verify your_pack.json.
+
+Do not paste proprietary engine code. Do not execute untrusted uploads. Unknown jobs stay untested until a category fits.
+
+Status
+
+Catalog starter. Hashes, names, intents, packs, dependency checks, and result cases exist. Multiple language backends, a caller, and web scraping do not.
+
+Stone core is MIT. Actor-Director is a separate project.
