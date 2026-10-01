@@ -8,6 +8,7 @@ def guess_category(function_name: str, filepath: str = "", code: str = "") -> st
         ("physics", ["gravity", "velocity", "collision", "impulse", "rigid", "explode", "aabb", "overlap"]),
         ("audio", ["sound", "audio", "mix", "sample", "wav"]),
         ("input", ["key", "mouse", "gamepad", "input"]),
+        ("health", ["health", "damage", "heal", "hitpoint"]),
         ("util", ["hash", "copy", "clamp", "parse", "normalize"]),
     ]
 
