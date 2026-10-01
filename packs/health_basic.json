@@ -2,7 +2,8 @@
   "pack": "stone:pack.health_basic",
   "description": "Basic health change helpers",
   "order": [
-    "stone:health.apply_damage"
+    "stone:health.apply_damage",
+    "stone:health.heal"
   ],
   "notes": "Parameters like max health stay outside the hash. This is the job, not the questionnaire."
 }
