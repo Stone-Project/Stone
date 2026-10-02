@@ -63,7 +63,7 @@ Commands:
 Examples:
   python -m stone.cli hash-function examples/inverse_sqrt_quake.py --intent "fast inverse square root" --job stone:math.inverse_sqrt
   python -m stone.cli backends stone:math.inverse_sqrt
-  python -m stone.cli call stone:math.inverse_sqrt 4
+  python -m stone.cli call stone:math.inverse_sqrt 4 --backend inverse_sqrt_quake
   python -m stone.cli run examples/health_turn.json
   python -m stone.cli list math
   python -m stone.cli show stone-v1:9b04fb6195afe000
@@ -132,11 +132,21 @@ def time_cases(filepath: str, function_name: str):
     elapsed = time.perf_counter() - start
     return round((elapsed / (loops * max(len(calls), 1))) * 1_000_000, 3)
 
-def call_hash(name: str, raw_args: list, quiet: bool = False):
+def call_hash(name: str, raw_args: list, quiet: bool = False, backend: str = ""):
     backends = find_backends(name)
+    if backend:
+        needle = backend.lower()
+        backends = [
+            item for item in backends
+            if needle in str(item.get("function_name", "")).lower()
+            or needle in str(item.get("hierarchical_name", "")).lower()
+            or needle in str(item.get("source_file", "")).lower()
+        ]
     entry = next((item for item in backends if item.get("status") == "verified_basic"), None)
     if not entry:
         print(f"No verified local hash for: {name}")
+        if backend:
+            print(f"Backend filter: {backend}")
         print("Hash the function first. This caller does not download code.")
         sys.exit(1)
     fn = load_entry_function(entry)
@@ -282,7 +292,10 @@ def main():
 
     elif cmd == "call" and len(sys.argv) > 2:
         try:
-            call_hash(sys.argv[2], sys.argv[3:])
+            backend_values = extract_flag_args(sys.argv, "--backend")
+            backend = backend_values[0] if backend_values else ""
+            raw_args = [item for item in sys.argv[3:] if item != "--backend" and item != backend]
+            call_hash(sys.argv[2], raw_args, backend=backend)
         except Exception as e:
             print(f"Call failed: {e}")
             sys.exit(1)
