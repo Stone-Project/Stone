@@ -5,6 +5,7 @@ import sys
 import os
 import json
 import hashlib
+import importlib.util
 import traceback
 from .hasher.parser import parse_file
 from .hasher.normalizer import normalize
@@ -46,14 +47,15 @@ Commands:
   show <short-id>
   delete <short-id>
   intent "description"     Search hashes by intent/name/category
+  call <name> [args...]    Run a verified local hash
   publish <short-id>       Not enabled yet (local library only)
   packs                    List local pack files
   verify [pack-file]       Check pack jobs against the local library
   help
 
 Examples:
-  python -m stone.cli hash-function examples/test_func.py
-  python -m stone.cli hash-function examples/test_func.py --intent "fast inverse square root"
+  python -m stone.cli hash-function examples/inverse_sqrt.py --intent "return one over square root"
+  python -m stone.cli call stone:math.inverse_sqrt 4
   python -m stone.cli list math
   python -m stone.cli show stone-v1:9b04fb6195afe000
 """)
@@ -74,6 +76,45 @@ def print_entries(entries):
         print(f"     Source  : {entry.get('source_file')}")
         print(f"     Status  : {entry.get('status')}  |  Tests: {entry.get('tests_passed')}/{entry.get('tests_total')}")
         print()
+
+def parse_call_arg(raw: str):
+    try:
+        return json.loads(raw)
+    except Exception:
+        return raw
+
+def load_entry_function(entry):
+    source = entry.get("source_file") or ""
+    function_name = entry.get("function_name") or ""
+    if not source or not os.path.isfile(source):
+        raise FileNotFoundError(f"Source file not found: {source}")
+    spec = importlib.util.spec_from_file_location("stone_call_mod", source)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"Could not load {source}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    fn = getattr(module, function_name, None)
+    if not callable(fn):
+        raise RuntimeError(f"{function_name} is not callable in {source}")
+    return fn
+
+def call_hash(name: str, raw_args: list):
+    entry = find_by_name(name)
+    if not entry:
+        print(f"No local hash for: {name}")
+        print("Hash the function first. This caller does not download code.")
+        sys.exit(1)
+    status = entry.get("status", "unknown")
+    if status != "verified_basic":
+        print(f"Refusing to call {entry.get('hierarchical_name')}")
+        print(f"Status is {status}. Only verified_basic hashes can be called.")
+        sys.exit(1)
+    fn = load_entry_function(entry)
+    args = [parse_call_arg(item) for item in raw_args]
+    result = fn(*args)
+    print(f"Name:   {entry.get('hierarchical_name')}")
+    print(f"Source: {entry.get('source_file')}")
+    print(f"Result: {result}")
 
 def main():
     if len(sys.argv) < 2:
@@ -175,6 +216,13 @@ def main():
             print(f"Deleted: {short_id}")
         else:
             print(f"Could not find or delete: {short_id}")
+            sys.exit(1)
+
+    elif cmd == "call" and len(sys.argv) > 2:
+        try:
+            call_hash(sys.argv[2], sys.argv[3:])
+        except Exception as e:
+            print(f"Call failed: {e}")
             sys.exit(1)
 
     elif cmd == "packs":
