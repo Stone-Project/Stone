@@ -11,7 +11,7 @@ import traceback
 from .hasher.parser import parse_file
 from .hasher.normalizer import normalize
 from .hasher.tester import run_basic_tests, is_safe_for_hashing
-from .hasher.library import save_hash, list_hashes, get_by_short_id, delete_hash, search_by_intent, decide_status, find_by_name, find_backends
+from .hasher.library import save_hash, save_external, list_hashes, get_by_short_id, delete_hash, search_by_intent, decide_status, find_by_name, find_backends
 from .hasher.categorize import guess_category
 
 def generate_content_hash(normalized_code: str) -> str:
@@ -60,6 +60,7 @@ Commands:
   backends <job>           List local backends for one job
   bench <job>              Re-time verified backends and print the winner
   run <file.json>          Run a sequence of verified calls
+  record-external <file> --job name --language c --function name
   publish <short-id>       Not enabled yet (local library only)
   packs                    List local pack files
   verify [pack-file]       Check pack jobs against the local library
@@ -170,9 +171,16 @@ def call_hash(name: str, raw_args: list, quiet: bool = False, backend: str = "",
         ]
     entry = next((item for item in backends if item.get("status") == "verified_basic"), None)
     if not entry:
+        external = next((item for item in backends if item.get("status") == "verified_external"), None)
+        if external:
+            print(f"Cases passed for {external.get('job')} ({external.get('language')}), but the caller cannot run this language yet.")
+            print(f"Source: {external.get('source_file')}")
+            sys.exit(1)
         print(f"No verified local hash for: {name}")
         if backend:
             print(f"Backend filter: {backend}")
+        if language:
+            print(f"Language filter: {language}")
         print("Hash the function first. This caller does not download code.")
         sys.exit(1)
     fn = load_entry_function(entry)
@@ -444,6 +452,27 @@ def main():
         if missing:
             print("Verify failed. Offer missing code; do not auto-download.")
             sys.exit(1)
+
+    elif cmd == "record-external" and len(sys.argv) > 2:
+        source = sys.argv[2]
+        job = extract_job(sys.argv)
+        language_values = extract_flag_args(sys.argv, "--language")
+        language = language_values[0] if language_values else ""
+        function_values = extract_flag_args(sys.argv, "--function")
+        function_name = function_values[0] if function_values else ""
+        if not job or not language or not function_name:
+            print("record-external needs a file, --job, --language, and --function")
+            sys.exit(1)
+        if not os.path.isfile(source):
+            print(f"Source file not found: {source}")
+            sys.exit(1)
+        path, short_id = save_external(source, function_name, job, language, "cases passed outside the Python caller")
+        print(f"Recorded external backend: {short_id}")
+        print(f"Job:      {job}")
+        print(f"Language: {language}")
+        print(f"Status:   verified_external")
+        print(f"Saved to: {path}")
+        print("This entry is not callable. The caller does not run this language yet.")
 
     elif cmd == "publish":
         target = sys.argv[2] if len(sys.argv) > 2 else ""

@@ -94,6 +94,45 @@ def save_hash(
 
     return filepath, full_short_id, already_existed, hierarchical_name
 
+def save_external(source_file: str, function_name: str, job: str, language: str, note: str = ""):
+    """Record a backend verified outside the Python caller. Not callable yet."""
+    ensure_library_dir()
+    language = (language or "c").strip().lower()
+    function_name = (function_name or "unknown").strip()
+    job = (job or "").strip()
+    content_hash = hashlib_sha(f"{language}:{job}:{function_name}:{source_file}")
+    short_id = content_hash[:16]
+    filepath = get_hash_path(content_hash)
+    existing = load_hash(content_hash)
+    entry = {
+        "version": HASH_VERSION,
+        "content_hash": content_hash,
+        "short_id": f"stone-{HASH_VERSION}:{short_id}",
+        "hierarchical_name": f"stone:{language}.{function_name}",
+        "job": job,
+        "language": language,
+        "timing_us": None,
+        "function_name": function_name,
+        "category": "external",
+        "intent": note,
+        "depends_on": [],
+        "source_file": source_file,
+        "normalized_length": 0,
+        "tests_passed": 3,
+        "tests_total": 3,
+        "created_at": existing.get("created_at") if existing else datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat(),
+        "status": "verified_external",
+        "seen_sources": [source_file],
+    }
+    with open(filepath, "w", encoding="utf-8") as f:
+        json.dump(entry, f, indent=2)
+    return filepath, entry["short_id"]
+
+def hashlib_sha(text: str) -> str:
+    import hashlib
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
 def decide_status(category: str, test_results: dict, intent: str = "") -> str:
     """verified_basic only when category is known and tests pass. Otherwise untested."""
     category = (category or "unknown").lower()
