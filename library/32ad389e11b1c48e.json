@@ -1,0 +1,19 @@
+{
+  "version": "v1",
+  "content_hash": "32ad389e11b1c48e1de5ec7341ca8ea40d36b85a66defc0c5ea5048fc5b46a57",
+  "short_id": "stone-v1:32ad389e11b1c48e",
+  "hierarchical_name": "stone:util.clamp",
+  "function_name": "clamp",
+  "category": "util",
+  "intent": "keep value in inclusive range",
+  "source_file": "examples/clamp.py",
+  "normalized_length": 194,
+  "tests_passed": 4,
+  "tests_total": 4,
+  "created_at": "2026-09-23T19:33:22.869583+00:00",
+  "updated_at": "2026-09-23T19:33:22.869598+00:00",
+  "status": "verified_basic",
+  "seen_sources": [
+    "examples/clamp.py"
+  ]
+}

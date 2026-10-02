@@ -1,0 +1,19 @@
+{
+  "version": "v1",
+  "content_hash": "9b04fb6195afe0004fa3f7e17cc78a34b5a33e58c67b74b9c64ea04a0d448ebe",
+  "short_id": "stone-v1:9b04fb6195afe000",
+  "hierarchical_name": "stone:math.fast_inverse_sqrt",
+  "function_name": "fast_inverse_sqrt",
+  "category": "math",
+  "intent": "fast inverse square root like Quake",
+  "source_file": "examples/test_func.py",
+  "normalized_length": 165,
+  "tests_passed": 4,
+  "tests_total": 4,
+  "created_at": "2026-08-21T16:27:44.900762+00:00",
+  "updated_at": "2026-09-08T17:30:30.427696+00:00",
+  "status": "verified_basic",
+  "seen_sources": [
+    "examples/test_func.py"
+  ]
+}

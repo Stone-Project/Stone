@@ -1,0 +1,20 @@
+{
+  "version": "v1",
+  "content_hash": "b02974c2ee05632b092cf8f95da65f0ca05ce13828c787311d70d129540c929b",
+  "short_id": "stone-v1:b02974c2ee05632b",
+  "hierarchical_name": "stone:math.saturate",
+  "function_name": "saturate",
+  "category": "math",
+  "intent": "clamp value into 0..1",
+  "depends_on": [],
+  "source_file": "examples/saturate.py",
+  "normalized_length": 153,
+  "tests_passed": 4,
+  "tests_total": 4,
+  "created_at": "2026-09-28T18:24:34.894495+00:00",
+  "updated_at": "2026-09-28T18:24:34.894517+00:00",
+  "status": "verified_basic",
+  "seen_sources": [
+    "examples/saturate.py"
+  ]
+}

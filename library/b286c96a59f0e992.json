@@ -1,0 +1,20 @@
+{
+  "version": "v1",
+  "content_hash": "b286c96a59f0e9924cce9960ba0757a1a058d962f6a2223372bd0e2a93659244",
+  "short_id": "stone-v1:b286c96a59f0e992",
+  "hierarchical_name": "stone:health.apply_damage",
+  "function_name": "apply_damage",
+  "category": "health",
+  "intent": "subtract damage from health without going below zero",
+  "depends_on": [],
+  "source_file": "examples/apply_damage.py",
+  "normalized_length": 179,
+  "tests_passed": 7,
+  "tests_total": 7,
+  "created_at": "2026-10-02T13:30:24.145600+00:00",
+  "updated_at": "2026-10-02T13:30:24.145618+00:00",
+  "status": "verified_basic",
+  "seen_sources": [
+    "examples/apply_damage.py"
+  ]
+}
