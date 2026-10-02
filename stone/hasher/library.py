@@ -39,6 +39,7 @@ def save_hash(
     intent: str = "",
     depends_on: list | None = None,
     job: str = "",
+    timing_us: float | None = None,
 ):
     ensure_library_dir()
 
@@ -58,6 +59,8 @@ def save_hash(
         job = existing.get("job", "")
     if not job:
         job = hierarchical_name
+    if timing_us is None and existing:
+        timing_us = existing.get("timing_us")
 
     entry = {
         "version": HASH_VERSION,
@@ -65,6 +68,7 @@ def save_hash(
         "short_id": full_short_id,
         "hierarchical_name": hierarchical_name,
         "job": job,
+        "timing_us": timing_us,
         "function_name": function_name,
         "category": category,
         "intent": intent,
@@ -183,5 +187,10 @@ def find_backends(job: str):
         ]
         if needle in names:
             matches.append(entry)
-    matches.sort(key=lambda e: (e.get("status") != "verified_basic", e.get("function_name", "")))
+    matches.sort(key=lambda e: (
+        e.get("status") != "verified_basic",
+        e.get("timing_us") is None,
+        e.get("timing_us") if e.get("timing_us") is not None else 10**12,
+        e.get("function_name", ""),
+    ))
     return matches

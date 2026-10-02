@@ -4,6 +4,7 @@
 import sys
 import os
 import json
+import time
 import hashlib
 import importlib.util
 import traceback
@@ -81,6 +82,8 @@ def print_entries(entries):
         print(f"     Category: {entry.get('category', 'unknown')}")
         if entry.get("job"):
             print(f"     Job     : {entry.get('job')}")
+        if entry.get("timing_us") is not None:
+            print(f"     Time    : {entry.get('timing_us')} us")
         if entry.get("intent"):
             print(f"     Intent  : {entry.get('intent')}")
         print(f"     Source  : {entry.get('source_file')}")
@@ -107,6 +110,27 @@ def load_entry_function(entry):
     if not callable(fn):
         raise RuntimeError(f"{function_name} is not callable in {source}")
     return fn
+
+def time_cases(filepath: str, function_name: str):
+    """Time the same local cases the tester already accepted. Not part of the hash."""
+    if not filepath.endswith(".py"):
+        return None
+    case_path = filepath[:-3] + ".cases.json"
+    if not os.path.isfile(case_path):
+        return None
+    fn = load_entry_function({"source_file": filepath, "function_name": function_name})
+    with open(case_path, "r", encoding="utf-8") as f:
+        cases = json.load(f)
+    calls = [(case.get("args") or []) for case in cases]
+    for args in calls:
+        fn(*args)
+    loops = 300
+    start = time.perf_counter()
+    for _ in range(loops):
+        for args in calls:
+            fn(*args)
+    elapsed = time.perf_counter() - start
+    return round((elapsed / (loops * max(len(calls), 1))) * 1_000_000, 3)
 
 def call_hash(name: str, raw_args: list, quiet: bool = False):
     backends = find_backends(name)
@@ -185,8 +209,9 @@ def main():
                 sys.exit(1)
 
             content_hash = generate_content_hash(normalized)
+            timing_us = time_cases(filepath, function_name)
             saved_path, short_id, already_existed, hierarchical_name = save_hash(
-                content_hash, filepath, normalized, test_results, function_name, category, intent, depends_on, job
+                content_hash, filepath, normalized, test_results, function_name, category, intent, depends_on, job, timing_us
             )
 
             if already_existed:
@@ -200,6 +225,8 @@ def main():
             print(f"Status:       {decide_status(category, test_results, intent)}")
             if job:
                 print(f"Job:          {job}")
+            if timing_us is not None:
+                print(f"Time:         {timing_us} us")
             if intent:
                 print(f"Intent:       {intent}")
             if depends_on:
