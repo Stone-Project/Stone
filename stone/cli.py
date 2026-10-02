@@ -132,6 +132,23 @@ def time_cases(filepath: str, function_name: str):
     elapsed = time.perf_counter() - start
     return round((elapsed / (loops * max(len(calls), 1))) * 1_000_000, 3)
 
+def expected_for(entry, args):
+    source = entry.get("source_file") or ""
+    if not source.endswith(".py"):
+        return None
+    case_path = source[:-3] + ".cases.json"
+    if not os.path.isfile(case_path):
+        return None
+    try:
+        with open(case_path, "r", encoding="utf-8") as f:
+            cases = json.load(f)
+    except Exception:
+        return None
+    for case in cases:
+        if case.get("args") == args:
+            return case.get("expect")
+    return None
+
 def call_hash(name: str, raw_args: list, quiet: bool = False, backend: str = ""):
     backends = find_backends(name)
     if backend:
@@ -152,11 +169,14 @@ def call_hash(name: str, raw_args: list, quiet: bool = False, backend: str = "")
     fn = load_entry_function(entry)
     args = [parse_call_arg(item) for item in raw_args]
     result = fn(*args)
+    expected = expected_for(entry, args)
     if not quiet:
         print(f"Job:    {entry.get('job', entry.get('hierarchical_name'))}")
         print(f"Name:   {entry.get('hierarchical_name')}")
         print(f"Source: {entry.get('source_file')}")
         print(f"Result: {result}")
+        if expected is not None:
+            print(f"Expect: {expected}")
     return result
 
 def resolve_step_arg(item, previous):
