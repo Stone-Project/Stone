@@ -175,13 +175,20 @@ def call_hash(name: str, raw_args: list, quiet: bool = False, backend: str = "",
         external = next((item for item in backends if item.get("status") == "verified_external"), None)
         if external:
             if str(external.get("language", "")).lower() == "c":
-                result = call_c(external.get("source_file"), external.get("function_name"), [parse_call_arg(item) for item in raw_args])
+                args = [parse_call_arg(item) for item in raw_args]
+                result = call_c(external.get("source_file"), external.get("function_name"), args)
+                expected = expected_for_c(external.get("source_file"), args)
+                if expected is not None and result != expected:
+                    print(f"C result {result} did not match expected {expected}")
+                    sys.exit(1)
                 if not quiet:
                     print(f"Job:    {external.get('job')}")
                     print(f"Language: c")
                     print(f"Name:   {external.get('function_name')}")
                     print(f"Source: {external.get('source_file')}")
                     print(f"Result: {result}")
+                    if expected is not None:
+                        print(f"Expect: {expected}")
                 return result
             print(f"Cases passed for {external.get('job')} ({external.get('language')}), but the caller cannot run this language yet.")
             print(f"Source: {external.get('source_file')}")
@@ -206,6 +213,22 @@ def call_hash(name: str, raw_args: list, quiet: bool = False, backend: str = "",
         if expected is not None:
             print(f"Expect: {expected}")
     return result
+
+def expected_for_c(source, args):
+    if not source or not source.endswith(".c"):
+        return None
+    case_path = source + ".cases.json"
+    if not os.path.isfile(case_path):
+        return None
+    try:
+        with open(case_path, "r", encoding="utf-8") as f:
+            cases = json.load(f)
+    except Exception:
+        return None
+    for case in cases:
+        if case.get("args") == args:
+            return case.get("expect")
+    return None
 
 def resolve_step_arg(item, previous):
     if item == "$prev":
