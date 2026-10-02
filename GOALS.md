@@ -24,9 +24,9 @@ call and run. $prev passes the last result.
 
 --backend forces one verified backend. --language filters by language.
 
-bench re-times verified Python backends. Timing is local and is not part of the hash.
+bench re-times verified Python backends and a recorded C backend. Timing is local and is not part of the hash. C bench time excludes compile.
 
-record-external can note a non-Python pass. Status verified_external is not callable.
+record-external can note a non-Python pass. A C entry can now be called if gcc is on PATH.
 
 Publish stays off. library/ stays off GitHub.
 
@@ -36,11 +36,11 @@ examples/clamp.c and examples/clamp_c_test.c are on main.
 
 The desktop driver passed the same three clamp cases. gcc is available there through MSYS2.
 
---language c refuses. The caller cannot run C yet.
+--language c compiles clamp.c locally and calls clamp_c. It does not install a compiler.
 
-A local verified_external entry may exist. It is not pushed. It is not a backend bench can pick.
+On the first bench, Python won. clamp_minmax was about 0.179 us, clamp about 0.259 us, and clamp_c about 1.616 us. The DLL call cost more than the C function saved.
 
-Stone does not install compilers. A missing compiler is reported, not downloaded.
+build/ and the DLL stay local. A verified_external note may exist locally and is not pushed.
 
 Rules
 
@@ -54,7 +54,7 @@ Do not auto-publish a failed or unreviewed hash.
 
 Do not rewrite cli.py when adding a function. The CLI changes only when a command changes.
 
-Do not treat a famous trick as faster until bench says so.
+Do not treat a famous trick, or C, as faster until bench says so.
 
 One Newton step of the Quake bit trick fails the inverse-sqrt cases. Three steps pass, and it is slower in Python.
 
@@ -62,7 +62,9 @@ Do not hash a .c file with the Python hasher.
 
 Not built
 
-A caller that can run C, or any caller that does not need the original source file.
+A caller that does not need the original source file.
+
+A general C bench. This one uses the clamp cases.
 
 A license check.
 
@@ -76,9 +78,9 @@ Order
 
 Keep the catalog honest: cases, verified status, shared job names.
 
-Language stays a label. Python remains the only callable language.
+Language stays a label. Python is still the fast caller for clamp.
 
-A C caller comes later, and only when asked. It must pass the same cases.
+A faster C path has to win a bench before it becomes the default.
 
 Then packs for real use, still without copying an engine.
 
@@ -90,4 +92,4 @@ Health category, run, inverse-sqrt backends, bench, clamp backends, category fix
 
 Language field and language filter.
 
-C clamp source, case driver, and external record. Caller still cannot run C.
+C clamp source, case driver, local compile caller, and a bench where Python won.
