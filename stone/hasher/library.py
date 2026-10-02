@@ -38,6 +38,7 @@ def save_hash(
     category: str = "unknown",
     intent: str = "",
     depends_on: list | None = None,
+    job: str = "",
 ):
     ensure_library_dir()
 
@@ -53,12 +54,17 @@ def save_hash(
         intent = existing.get("intent", "")
     if not depends_on:
         depends_on = existing.get("depends_on", []) if existing else []
+    if not job and existing:
+        job = existing.get("job", "")
+    if not job:
+        job = hierarchical_name
 
     entry = {
         "version": HASH_VERSION,
         "content_hash": content_hash,
         "short_id": full_short_id,
         "hierarchical_name": hierarchical_name,
+        "job": job,
         "function_name": function_name,
         "category": category,
         "intent": intent,
@@ -139,6 +145,7 @@ def search_by_intent(query: str):
         haystack = " ".join([
             str(entry.get("intent", "")),
             str(entry.get("hierarchical_name", "")),
+            str(entry.get("job", "")),
             str(entry.get("function_name", "")),
             str(entry.get("category", "")),
         ]).lower()
@@ -152,16 +159,29 @@ def search_by_intent(query: str):
     return results
 
 def find_by_name(name: str):
-    """Find a library entry by hierarchical name, short id, or function name."""
+    """Find a library entry by hierarchical name, short id, function name, or job."""
     needle = (name or "").strip().lower()
     if not needle:
         return None
+    matches = find_backends(needle)
+    if matches:
+        return matches[0]
+    return None
+
+def find_backends(job: str):
+    """All local backends for a job. Verified entries come first."""
+    needle = (job or "").strip().lower()
+    if not needle:
+        return []
+    matches = []
     for entry in list_hashes():
         names = [
+            str(entry.get("job", "")).lower(),
             str(entry.get("hierarchical_name", "")).lower(),
             str(entry.get("short_id", "")).lower(),
             str(entry.get("function_name", "")).lower(),
         ]
         if needle in names:
-            return entry
-    return None
+            matches.append(entry)
+    matches.sort(key=lambda e: (e.get("status") != "verified_basic", e.get("function_name", "")))
+    return matches

@@ -10,7 +10,7 @@ import traceback
 from .hasher.parser import parse_file
 from .hasher.normalizer import normalize
 from .hasher.tester import run_basic_tests, is_safe_for_hashing
-from .hasher.library import save_hash, list_hashes, get_by_short_id, delete_hash, search_by_intent, decide_status, find_by_name
+from .hasher.library import save_hash, list_hashes, get_by_short_id, delete_hash, search_by_intent, decide_status, find_by_name, find_backends
 from .hasher.categorize import guess_category
 
 def generate_content_hash(normalized_code: str) -> str:
@@ -33,6 +33,10 @@ def extract_intent(argv):
 def extract_depends(argv):
     return extract_flag_args(argv, "--depends")
 
+def extract_job(argv):
+    values = extract_flag_args(argv, "--job")
+    return values[0] if values else ""
+
 def print_help():
     print("""
 Stone - Semantic Function Hashing CLI
@@ -42,12 +46,13 @@ Usage:
   python -m stone.cli <command> [arguments]
 
 Commands:
-  hash-function <file> [--intent "what it does"] [--depends name ...]
+  hash-function <file> [--intent "what it does"] [--depends name ...] [--job name]
   list [category]
   show <short-id>
   delete <short-id>
   intent "description"     Search hashes by intent/name/category
   call <name> [args...]    Run a verified local hash
+  backends <job>           List local backends for one job
   run <file.json>          Run a sequence of verified calls
   publish <short-id>       Not enabled yet (local library only)
   packs                    List local pack files
@@ -55,7 +60,8 @@ Commands:
   help
 
 Examples:
-  python -m stone.cli hash-function examples/inverse_sqrt.py --intent "return one over square root"
+  python -m stone.cli hash-function examples/inverse_sqrt_quake.py --intent "fast inverse square root" --job stone:math.inverse_sqrt
+  python -m stone.cli backends stone:math.inverse_sqrt
   python -m stone.cli call stone:math.inverse_sqrt 4
   python -m stone.cli run examples/health_turn.json
   python -m stone.cli list math
@@ -73,6 +79,8 @@ def print_entries(entries):
         print(f"     Name    : {entry.get('hierarchical_name', 'n/a')}")
         print(f"     Function: {entry.get('function_name', 'unknown')}")
         print(f"     Category: {entry.get('category', 'unknown')}")
+        if entry.get("job"):
+            print(f"     Job     : {entry.get('job')}")
         if entry.get("intent"):
             print(f"     Intent  : {entry.get('intent')}")
         print(f"     Source  : {entry.get('source_file')}")
@@ -101,20 +109,17 @@ def load_entry_function(entry):
     return fn
 
 def call_hash(name: str, raw_args: list, quiet: bool = False):
-    entry = find_by_name(name)
+    backends = find_backends(name)
+    entry = next((item for item in backends if item.get("status") == "verified_basic"), None)
     if not entry:
-        print(f"No local hash for: {name}")
+        print(f"No verified local hash for: {name}")
         print("Hash the function first. This caller does not download code.")
-        sys.exit(1)
-    status = entry.get("status", "unknown")
-    if status != "verified_basic":
-        print(f"Refusing to call {entry.get('hierarchical_name')}")
-        print(f"Status is {status}. Only verified_basic hashes can be called.")
         sys.exit(1)
     fn = load_entry_function(entry)
     args = [parse_call_arg(item) for item in raw_args]
     result = fn(*args)
     if not quiet:
+        print(f"Job:    {entry.get('job', entry.get('hierarchical_name'))}")
         print(f"Name:   {entry.get('hierarchical_name')}")
         print(f"Source: {entry.get('source_file')}")
         print(f"Result: {result}")
@@ -158,6 +163,7 @@ def main():
         filepath = sys.argv[2]
         intent = extract_intent(sys.argv)
         depends_on = extract_depends(sys.argv)
+        job = extract_job(sys.argv)
         print(f"Hashing function: {filepath}")
 
         try:
@@ -180,7 +186,7 @@ def main():
 
             content_hash = generate_content_hash(normalized)
             saved_path, short_id, already_existed, hierarchical_name = save_hash(
-                content_hash, filepath, normalized, test_results, function_name, category, intent, depends_on
+                content_hash, filepath, normalized, test_results, function_name, category, intent, depends_on, job
             )
 
             if already_existed:
@@ -192,6 +198,8 @@ def main():
             print(f"Category:     {category}")
             print(f"Name:         {hierarchical_name}")
             print(f"Status:       {decide_status(category, test_results, intent)}")
+            if job:
+                print(f"Job:          {job}")
             if intent:
                 print(f"Intent:       {intent}")
             if depends_on:
@@ -251,6 +259,11 @@ def main():
         except Exception as e:
             print(f"Call failed: {e}")
             sys.exit(1)
+
+    elif cmd == "backends" and len(sys.argv) > 2:
+        matches = find_backends(sys.argv[2])
+        print(f"Backends for {sys.argv[2]}")
+        print_entries(matches)
 
     elif cmd == "run" and len(sys.argv) > 2:
         try:
