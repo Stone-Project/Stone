@@ -38,6 +38,10 @@ def extract_job(argv):
     values = extract_flag_args(argv, "--job")
     return values[0] if values else ""
 
+def extract_language(argv):
+    values = extract_flag_args(argv, "--language")
+    return values[0] if values else "python"
+
 def print_help():
     print("""
 Stone - Semantic Function Hashing CLI
@@ -47,7 +51,7 @@ Usage:
   python -m stone.cli <command> [arguments]
 
 Commands:
-  hash-function <file> [--intent "what it does"] [--depends name ...] [--job name]
+  hash-function <file> [--intent "what it does"] [--depends name ...] [--job name] [--language python]
   list [category]
   show <short-id>
   delete <short-id>
@@ -83,6 +87,7 @@ def print_entries(entries):
         print(f"     Category: {entry.get('category', 'unknown')}")
         if entry.get("job"):
             print(f"     Job     : {entry.get('job')}")
+        print(f"     Language: {entry.get('language', 'python')}")
         if entry.get("timing_us") is not None:
             print(f"     Time    : {entry.get('timing_us')} us")
         if entry.get("intent"):
@@ -217,7 +222,7 @@ def bench_job(job: str):
     print(f"Bench for {job}")
     for _, entry, timing in scored:
         shown = "no cases" if timing is None else f"{timing} us"
-        print(f"  {entry.get('function_name')}  {shown}  {entry.get('source_file')}")
+        print(f"  {entry.get('function_name')}  {entry.get('language', 'python')}  {shown}  {entry.get('source_file')}")
     winner = scored[0][1]
     print(f"Winner: {winner.get('function_name')} ({winner.get('source_file')})")
 
@@ -237,6 +242,7 @@ def main():
         intent = extract_intent(sys.argv)
         depends_on = extract_depends(sys.argv)
         job = extract_job(sys.argv)
+        language = extract_language(sys.argv)
         print(f"Hashing function: {filepath}")
 
         try:
@@ -260,7 +266,7 @@ def main():
             content_hash = generate_content_hash(normalized)
             timing_us = time_cases(filepath, function_name)
             saved_path, short_id, already_existed, hierarchical_name = save_hash(
-                content_hash, filepath, normalized, test_results, function_name, category, intent, depends_on, job, timing_us
+                content_hash, filepath, normalized, test_results, function_name, category, intent, depends_on, job, timing_us, language
             )
 
             if already_existed:
@@ -274,6 +280,7 @@ def main():
             print(f"Status:       {decide_status(category, test_results, intent)}")
             if job:
                 print(f"Job:          {job}")
+            print(f"Language:     {language}")
             if timing_us is not None:
                 print(f"Time:         {timing_us} us")
             if intent:
@@ -310,6 +317,7 @@ def main():
         print(f"Name         : {entry.get('hierarchical_name', 'n/a')}")
         print(f"Function     : {entry.get('function_name', 'unknown')}")
         print(f"Category     : {entry.get('category', 'unknown')}")
+        print(f"Language     : {entry.get('language', 'python')}")
         print(f"Intent       : {entry.get('intent', '')}")
         print(f"Content hash : {entry.get('content_hash')}")
         print(f"Source       : {entry.get('source_file')}")

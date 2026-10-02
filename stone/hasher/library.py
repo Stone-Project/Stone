@@ -40,6 +40,7 @@ def save_hash(
     depends_on: list | None = None,
     job: str = "",
     timing_us: float | None = None,
+    language: str = "",
 ):
     ensure_library_dir()
 
@@ -61,6 +62,10 @@ def save_hash(
         job = hierarchical_name
     if timing_us is None and existing:
         timing_us = existing.get("timing_us")
+    if not language and existing:
+        language = existing.get("language", "")
+    if not language:
+        language = "python"
 
     entry = {
         "version": HASH_VERSION,
@@ -68,6 +73,7 @@ def save_hash(
         "short_id": full_short_id,
         "hierarchical_name": hierarchical_name,
         "job": job,
+        "language": language,
         "timing_us": timing_us,
         "function_name": function_name,
         "category": category,
@@ -150,6 +156,7 @@ def search_by_intent(query: str):
             str(entry.get("intent", "")),
             str(entry.get("hierarchical_name", "")),
             str(entry.get("job", "")),
+            str(entry.get("language", "")),
             str(entry.get("function_name", "")),
             str(entry.get("category", "")),
         ]).lower()
@@ -173,7 +180,7 @@ def find_by_name(name: str):
     return None
 
 def find_backends(job: str):
-    """All local backends for a job. Verified entries come first."""
+    """All local backends for a job. Verified entries come first, then faster ones."""
     needle = (job or "").strip().lower()
     if not needle:
         return []
