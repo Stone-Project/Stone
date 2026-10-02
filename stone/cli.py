@@ -13,7 +13,7 @@ from .hasher.normalizer import normalize
 from .hasher.tester import run_basic_tests, is_safe_for_hashing
 from .hasher.library import save_hash, save_external, list_hashes, get_by_short_id, delete_hash, search_by_intent, decide_status, find_by_name, find_backends
 from .hasher.categorize import guess_category
-from .hasher.c_caller import call_c
+from .hasher.c_caller import call_c, time_c
 
 def generate_content_hash(normalized_code: str) -> str:
     return hashlib.sha256(normalized_code.encode("utf-8")).hexdigest()
@@ -232,7 +232,10 @@ def run_steps(path: str):
 
 
 def bench_job(job: str, language: str = ""):
-    matches = [item for item in find_backends(job) if item.get("status") == "verified_basic"]
+    matches = [
+        item for item in find_backends(job)
+        if item.get("status") in ("verified_basic", "verified_external")
+    ]
     if language:
         wanted = language.lower()
         matches = [item for item in matches if str(item.get("language", "python")).lower() == wanted]
@@ -241,15 +244,22 @@ def bench_job(job: str, language: str = ""):
         sys.exit(1)
     scored = []
     for entry in matches:
-        timing = time_cases(entry.get("source_file") or "", entry.get("function_name") or "")
+        if str(entry.get("language", "python")).lower() == "c":
+            case_path = "examples/clamp.cases.json"
+            with open(case_path, "r", encoding="utf-8") as f:
+                cases = json.load(f)
+            timing = time_c(entry.get("source_file") or "", entry.get("function_name") or "", cases)
+        else:
+            timing = time_cases(entry.get("source_file") or "", entry.get("function_name") or "")
         scored.append((timing if timing is not None else 10**12, entry, timing))
     scored.sort(key=lambda item: item[0])
     print(f"Bench for {job}")
+    print("C time excludes compile.")
     for _, entry, timing in scored:
         shown = "no cases" if timing is None else f"{timing} us"
         print(f"  {entry.get('function_name')}  {entry.get('language', 'python')}  {shown}  {entry.get('source_file')}")
     winner = scored[0][1]
-    print(f"Winner: {winner.get('function_name')} ({winner.get('source_file')})")
+    print(f"Winner: {winner.get('function_name')} ({winner.get('language', 'python')})")
 
 def main():
     if len(sys.argv) < 2:
