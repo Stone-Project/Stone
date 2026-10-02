@@ -48,6 +48,7 @@ Commands:
   delete <short-id>
   intent "description"     Search hashes by intent/name/category
   call <name> [args...]    Run a verified local hash
+  run <file.json>          Run a sequence of verified calls
   publish <short-id>       Not enabled yet (local library only)
   packs                    List local pack files
   verify [pack-file]       Check pack jobs against the local library
@@ -56,6 +57,7 @@ Commands:
 Examples:
   python -m stone.cli hash-function examples/inverse_sqrt.py --intent "return one over square root"
   python -m stone.cli call stone:math.inverse_sqrt 4
+  python -m stone.cli run examples/health_turn.json
   python -m stone.cli list math
   python -m stone.cli show stone-v1:9b04fb6195afe000
 """)
@@ -98,7 +100,7 @@ def load_entry_function(entry):
         raise RuntimeError(f"{function_name} is not callable in {source}")
     return fn
 
-def call_hash(name: str, raw_args: list):
+def call_hash(name: str, raw_args: list, quiet: bool = False):
     entry = find_by_name(name)
     if not entry:
         print(f"No local hash for: {name}")
@@ -112,9 +114,34 @@ def call_hash(name: str, raw_args: list):
     fn = load_entry_function(entry)
     args = [parse_call_arg(item) for item in raw_args]
     result = fn(*args)
-    print(f"Name:   {entry.get('hierarchical_name')}")
-    print(f"Source: {entry.get('source_file')}")
-    print(f"Result: {result}")
+    if not quiet:
+        print(f"Name:   {entry.get('hierarchical_name')}")
+        print(f"Source: {entry.get('source_file')}")
+        print(f"Result: {result}")
+    return result
+
+def resolve_step_arg(item, previous):
+    if item == "$prev":
+        if previous is None:
+            raise RuntimeError("$prev used before any result")
+        return previous
+    return item
+
+def run_steps(path: str):
+    with open(path, "r", encoding="utf-8") as f:
+        spec = json.load(f)
+    steps = spec.get("steps") or []
+    if not steps:
+        print(f"No steps in {path}")
+        sys.exit(1)
+    previous = None
+    print(spec.get("name") or path)
+    for index, step in enumerate(steps, start=1):
+        name = step.get("name")
+        raw_args = [resolve_step_arg(item, previous) for item in step.get("args") or []]
+        previous = call_hash(name, raw_args, quiet=True)
+        print(f"{index}. {name} {raw_args} -> {previous}")
+    print(f"Final: {previous}")
 
 def main():
     if len(sys.argv) < 2:
@@ -223,6 +250,13 @@ def main():
             call_hash(sys.argv[2], sys.argv[3:])
         except Exception as e:
             print(f"Call failed: {e}")
+            sys.exit(1)
+
+    elif cmd == "run" and len(sys.argv) > 2:
+        try:
+            run_steps(sys.argv[2])
+        except Exception as e:
+            print(f"Run failed: {e}")
             sys.exit(1)
 
     elif cmd == "packs":

@@ -1,0 +1,7 @@
+{
+  "name": "damage then heal",
+  "steps": [
+    {"name": "stone:health.apply_damage", "args": [100, 30]},
+    {"name": "stone:health.heal", "args": ["$prev", 15, 100]}
+  ]
+}

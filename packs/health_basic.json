@@ -1,9 +1,9 @@
 {
   "pack": "stone:pack.health_basic",
-  "description": "Basic health change helpers",
+  "description": "Damage then heal. Max health stays outside the hash.",
   "order": [
     "stone:health.apply_damage",
     "stone:health.heal"
   ],
-  "notes": "Parameters like max health stay outside the hash. This is the job, not the questionnaire."
+  "notes": "Rehash both functions after the health category exists, or call will refuse them."
 }
