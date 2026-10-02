@@ -155,8 +155,11 @@ def expected_for(entry, args):
             return case.get("expect")
     return None
 
-def call_hash(name: str, raw_args: list, quiet: bool = False, backend: str = ""):
+def call_hash(name: str, raw_args: list, quiet: bool = False, backend: str = "", language: str = ""):
     backends = find_backends(name)
+    if language:
+        wanted = language.lower()
+        backends = [item for item in backends if str(item.get("language", "python")).lower() == wanted]
     if backend:
         needle = backend.lower()
         backends = [
@@ -178,6 +181,7 @@ def call_hash(name: str, raw_args: list, quiet: bool = False, backend: str = "")
     expected = expected_for(entry, args)
     if not quiet:
         print(f"Job:    {entry.get('job', entry.get('hierarchical_name'))}")
+        print(f"Language: {entry.get('language', 'python')}")
         print(f"Name:   {entry.get('hierarchical_name')}")
         print(f"Source: {entry.get('source_file')}")
         print(f"Result: {result}")
@@ -209,8 +213,11 @@ def run_steps(path: str):
     print(f"Final: {previous}")
 
 
-def bench_job(job: str):
+def bench_job(job: str, language: str = ""):
     matches = [item for item in find_backends(job) if item.get("status") == "verified_basic"]
+    if language:
+        wanted = language.lower()
+        matches = [item for item in matches if str(item.get("language", "python")).lower() == wanted]
     if not matches:
         print(f"No verified local backends for: {job}")
         sys.exit(1)
@@ -341,18 +348,26 @@ def main():
         try:
             backend_values = extract_flag_args(sys.argv, "--backend")
             backend = backend_values[0] if backend_values else ""
-            raw_args = [item for item in sys.argv[3:] if item != "--backend" and item != backend]
-            call_hash(sys.argv[2], raw_args, backend=backend)
+            language_values = extract_flag_args(sys.argv, "--language")
+            language = language_values[0] if language_values else ""
+            skip = {"--backend", "--language", backend, language}
+            raw_args = [item for item in sys.argv[3:] if item not in skip]
+            call_hash(sys.argv[2], raw_args, backend=backend, language=language)
         except Exception as e:
             print(f"Call failed: {e}")
             sys.exit(1)
 
 
     elif cmd == "bench" and len(sys.argv) > 2:
-        bench_job(sys.argv[2])
+        language_values = extract_flag_args(sys.argv, "--language")
+        bench_job(sys.argv[2], language_values[0] if language_values else "")
 
     elif cmd == "backends" and len(sys.argv) > 2:
         matches = find_backends(sys.argv[2])
+        language_values = extract_flag_args(sys.argv, "--language")
+        if language_values:
+            wanted = language_values[0].lower()
+            matches = [item for item in matches if str(item.get("language", "python")).lower() == wanted]
         print(f"Backends for {sys.argv[2]}")
         print_entries(matches)
 
