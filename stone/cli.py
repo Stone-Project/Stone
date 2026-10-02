@@ -13,6 +13,7 @@ from .hasher.normalizer import normalize
 from .hasher.tester import run_basic_tests, is_safe_for_hashing
 from .hasher.library import save_hash, save_external, list_hashes, get_by_short_id, delete_hash, search_by_intent, decide_status, find_by_name, find_backends
 from .hasher.categorize import guess_category
+from .hasher.c_caller import call_c
 
 def generate_content_hash(normalized_code: str) -> str:
     return hashlib.sha256(normalized_code.encode("utf-8")).hexdigest()
@@ -173,6 +174,15 @@ def call_hash(name: str, raw_args: list, quiet: bool = False, backend: str = "",
     if not entry:
         external = next((item for item in backends if item.get("status") == "verified_external"), None)
         if external:
+            if str(external.get("language", "")).lower() == "c":
+                result = call_c(external.get("source_file"), external.get("function_name"), [parse_call_arg(item) for item in raw_args])
+                if not quiet:
+                    print(f"Job:    {external.get('job')}")
+                    print(f"Language: c")
+                    print(f"Name:   {external.get('function_name')}")
+                    print(f"Source: {external.get('source_file')}")
+                    print(f"Result: {result}")
+                return result
             print(f"Cases passed for {external.get('job')} ({external.get('language')}), but the caller cannot run this language yet.")
             print(f"Source: {external.get('source_file')}")
             sys.exit(1)
