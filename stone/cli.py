@@ -54,6 +54,7 @@ Commands:
   intent "description"     Search hashes by intent/name/category
   call <name> [args...]    Run a verified local hash
   backends <job>           List local backends for one job
+  bench <job>              Re-time verified backends and print the winner
   run <file.json>          Run a sequence of verified calls
   publish <short-id>       Not enabled yet (local library only)
   packs                    List local pack files
@@ -202,6 +203,24 @@ def run_steps(path: str):
         print(f"{index}. {name} {raw_args} -> {previous}")
     print(f"Final: {previous}")
 
+
+def bench_job(job: str):
+    matches = [item for item in find_backends(job) if item.get("status") == "verified_basic"]
+    if not matches:
+        print(f"No verified local backends for: {job}")
+        sys.exit(1)
+    scored = []
+    for entry in matches:
+        timing = time_cases(entry.get("source_file") or "", entry.get("function_name") or "")
+        scored.append((timing if timing is not None else 10**12, entry, timing))
+    scored.sort(key=lambda item: item[0])
+    print(f"Bench for {job}")
+    for _, entry, timing in scored:
+        shown = "no cases" if timing is None else f"{timing} us"
+        print(f"  {entry.get('function_name')}  {shown}  {entry.get('source_file')}")
+    winner = scored[0][1]
+    print(f"Winner: {winner.get('function_name')} ({winner.get('source_file')})")
+
 def main():
     if len(sys.argv) < 2:
         print_help()
@@ -319,6 +338,10 @@ def main():
         except Exception as e:
             print(f"Call failed: {e}")
             sys.exit(1)
+
+
+    elif cmd == "bench" and len(sys.argv) > 2:
+        bench_job(sys.argv[2])
 
     elif cmd == "backends" and len(sys.argv) > 2:
         matches = find_backends(sys.argv[2])
