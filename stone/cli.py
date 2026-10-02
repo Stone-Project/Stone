@@ -14,6 +14,7 @@ from .hasher.tester import run_basic_tests, is_safe_for_hashing
 from .hasher.library import save_hash, save_external, list_hashes, get_by_short_id, delete_hash, search_by_intent, decide_status, find_by_name, find_backends
 from .hasher.categorize import guess_category
 from .hasher.c_caller import call_c, time_c
+from .hasher.languages import describe_languages, admit_source
 
 def generate_content_hash(normalized_code: str) -> str:
     return hashlib.sha256(normalized_code.encode("utf-8")).hexdigest()
@@ -62,6 +63,7 @@ Commands:
   bench <job>              Re-time verified backends and print the winner
   run <file.json>          Run a sequence of verified calls
   record-external <file> --job name --language c --function name
+  languages [file]         Show which languages have a loader and a tool
   publish <short-id>       Not enabled yet (local library only)
   packs                    List local pack files
   verify [pack-file]       Check pack jobs against the local library
@@ -499,6 +501,14 @@ def main():
         if missing:
             print("Verify failed. Offer missing code; do not auto-download.")
             sys.exit(1)
+
+    elif cmd == "languages":
+        for line in describe_languages():
+            print(line)
+        if len(sys.argv) > 2:
+            result = admit_source(sys.argv[2])
+            print(f"File: {sys.argv[2]}")
+            print(f"Admit: {result}")
 
     elif cmd == "record-external" and len(sys.argv) > 2:
         source = sys.argv[2]
