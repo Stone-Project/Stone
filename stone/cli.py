@@ -245,10 +245,14 @@ def bench_job(job: str, language: str = ""):
     scored = []
     for entry in matches:
         if str(entry.get("language", "python")).lower() == "c":
-            case_path = "examples/clamp.cases.json"
-            with open(case_path, "r", encoding="utf-8") as f:
-                cases = json.load(f)
-            timing = time_c(entry.get("source_file") or "", entry.get("function_name") or "", cases)
+            source = entry.get("source_file") or ""
+            case_path = source + ".cases.json" if source.endswith(".c") else ""
+            if not case_path or not os.path.isfile(case_path):
+                timing = None
+            else:
+                with open(case_path, "r", encoding="utf-8") as f:
+                    cases = json.load(f)
+                timing = time_c(source, entry.get("function_name") or "", cases)
         else:
             timing = time_cases(entry.get("source_file") or "", entry.get("function_name") or "")
         scored.append((timing if timing is not None else 10**12, entry, timing))
