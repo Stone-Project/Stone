@@ -64,6 +64,7 @@ Commands:
   run <file.json>          Run a sequence of verified calls
   record-external <file> --job name --language c --function name
   languages [file]         Show which languages have a loader and a tool
+  verify-examples          Test local examples that have cases. Does not hash or publish.
   publish <short-id>       Not enabled yet (local library only)
   packs                    List local pack files
   verify [pack-file]       Check pack jobs against the local library
@@ -266,6 +267,42 @@ def run_steps(path: str):
     if "expect" in spec:
         print(f"Expect: {spec.get('expect')}")
 
+
+
+def verify_examples(save: bool = False):
+    """Check local example functions that have cases. Does not download or publish."""
+    example_dir = os.path.join(os.getcwd(), "examples")
+    if not os.path.isdir(example_dir):
+        print("No examples directory found.")
+        sys.exit(1)
+    files = sorted(
+        name for name in os.listdir(example_dir)
+        if name.endswith(".py") and os.path.isfile(os.path.join(example_dir, name[:-3] + ".cases.json"))
+    )
+    if not files:
+        print("No example functions with cases.")
+        sys.exit(1)
+    failed = 0
+    for name in files:
+        path = os.path.join("examples", name)
+        parsed = parse_file(path)
+        if not parsed:
+            print(f"FAIL  {name}  could not parse")
+            failed += 1
+            continue
+        results = run_basic_tests(parsed["code"], parsed["function_name"], path)
+        passed = results.get("passed", 0)
+        total = results.get("total", 0)
+        if is_safe_for_hashing(results):
+            print(f"OK    {parsed['function_name']}  {passed}/{total}")
+        else:
+            print(f"FAIL  {parsed['function_name']}  {passed}/{total}")
+            failed += 1
+    print(f"Checked: {len(files)}  Failed: {failed}")
+    if save:
+        print("Save is not enabled on this command. Hash a passing file by hand.")
+    if failed:
+        sys.exit(1)
 
 def bench_job(job: str, language: str = ""):
     matches = [
@@ -512,6 +549,9 @@ def main():
         if missing:
             print("Verify failed. Offer missing code; do not auto-download.")
             sys.exit(1)
+
+    elif cmd == "verify-examples":
+        verify_examples(save="--save" in sys.argv)
 
     elif cmd == "languages":
         for line in describe_languages():
