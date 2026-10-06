@@ -1,0 +1,9 @@
+{
+  "name": "damage clamp-c heal must fail",
+  "expect": 64,
+  "steps": [
+    {"name": "stone:health.apply_damage", "args": [100, 30]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 50], "language": "c"},
+    {"name": "stone:health.heal", "args": ["$prev", 15, 100]}
+  ]
+}
