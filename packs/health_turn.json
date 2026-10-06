@@ -1,0 +1,9 @@
+{
+  "pack": "pack:health.turn",
+  "description": "Damage, clamp, and heal. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:health.apply_damage",
+    "stone:util.clamp",
+    "stone:health.heal"
+  ]
+}
