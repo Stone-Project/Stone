@@ -44,6 +44,10 @@ def extract_language(argv):
     values = extract_flag_args(argv, "--language")
     return values[0] if values else "python"
 
+def extract_category(argv):
+    values = extract_flag_args(argv, "--category")
+    return values[0] if values else ""
+
 def print_help():
     print("""
 Stone - Semantic Function Hashing CLI
@@ -53,7 +57,7 @@ Usage:
   python -m stone.cli <command> [arguments]
 
 Commands:
-  hash-function <file> [--intent "what it does"] [--depends name ...] [--job name] [--language python]
+  hash-function <file> [--intent "what it does"] [--depends name ...] [--job name] [--language python] [--category name]
   list [category]
   show <short-id>
   delete <short-id>
@@ -369,6 +373,7 @@ def main():
         depends_on = extract_depends(sys.argv)
         job = extract_job(sys.argv)
         language = extract_language(sys.argv)
+        category_flag = extract_category(sys.argv)
         print(f"Hashing function: {filepath}")
 
         try:
@@ -378,7 +383,7 @@ def main():
 
             code = parsed["code"]
             function_name = parsed["function_name"]
-            category = guess_category(function_name, filepath, code)
+            category = category_flag or guess_category(function_name, filepath, code)
 
             normalized = normalize(code)
             test_results = run_basic_tests(code, function_name, filepath)
