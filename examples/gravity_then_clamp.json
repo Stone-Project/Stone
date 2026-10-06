@@ -1,0 +1,8 @@
+{
+  "name": "gravity then clamp",
+  "expect": 8,
+  "steps": [
+    {"name": "stone:physics.apply_gravity", "args": [0, 10, 1]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 8], "language": "python"}
+  ]
+}
