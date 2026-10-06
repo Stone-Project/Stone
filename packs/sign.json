@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.sign",
+  "description": "Sign, then heal. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.sign",
+    "stone:health.heal"
+  ]
+}

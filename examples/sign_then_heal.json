@@ -1,0 +1,8 @@
+{
+  "name": "sign then heal",
+  "expect": 16,
+  "steps": [
+    {"name": "stone:math.sign", "args": [4]},
+    {"name": "stone:health.heal", "args": ["$prev", 15, 100]}
+  ]
+}
