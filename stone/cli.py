@@ -64,7 +64,7 @@ Commands:
   run <file.json>          Run a sequence of verified calls
   record-external <file> --job name --language c --function name
   languages [file]         Show which languages have a loader and a tool
-  verify-examples          Test local examples that have cases. Does not hash or publish.
+  verify-examples [files...]  Test a sequence of local files. Defaults to cased examples. Does not hash or publish.
   publish <short-id>       Not enabled yet (local library only)
   packs                    List local pack files
   verify [pack-file]       Check pack jobs against the local library
@@ -269,40 +269,54 @@ def run_steps(path: str):
 
 
 
-def verify_examples(save: bool = False):
-    """Check local example functions that have cases. Does not download or publish."""
-    example_dir = os.path.join(os.getcwd(), "examples")
-    if not os.path.isdir(example_dir):
-        print("No examples directory found.")
+def verify_files(paths: list):
+    """Check a sequence of local files. Names the language and sorts the report. Does not download or publish."""
+    if not paths:
+        example_dir = os.path.join(os.getcwd(), "examples")
+        paths = [
+            os.path.join("examples", name)
+            for name in sorted(os.listdir(example_dir))
+            if name.endswith(".py") and os.path.isfile(os.path.join(example_dir, name[:-3] + ".cases.json"))
+        ] if os.path.isdir(example_dir) else []
+    if not paths:
+        print("No files to verify.")
         sys.exit(1)
-    files = sorted(
-        name for name in os.listdir(example_dir)
-        if name.endswith(".py") and os.path.isfile(os.path.join(example_dir, name[:-3] + ".cases.json"))
-    )
-    if not files:
-        print("No example functions with cases.")
-        sys.exit(1)
+    rows = []
     failed = 0
-    for name in files:
-        path = os.path.join("examples", name)
-        parsed = parse_file(path)
-        if not parsed:
-            print(f"FAIL  {name}  could not parse")
+    for path in paths:
+        admitted = admit_source(path)
+        language = admitted.get("language", "unknown")
+        if not admitted.get("ok"):
+            print(f"FAIL  {path}  {admitted.get('reason')}")
+            rows.append((language, "unknown", path, "FAIL"))
             failed += 1
             continue
+        if language != "python":
+            print(f"HOLD  {path}  language={language}  loader exists, Python cases were not run")
+            rows.append((language, "external", path, "HOLD"))
+            continue
+        parsed = parse_file(path)
+        if not parsed:
+            print(f"FAIL  {path}  could not parse")
+            rows.append((language, "unknown", path, "FAIL"))
+            failed += 1
+            continue
+        category = guess_category(parsed["function_name"], path, parsed["code"])
         results = run_basic_tests(parsed["code"], parsed["function_name"], path)
         passed = results.get("passed", 0)
         total = results.get("total", 0)
-        if is_safe_for_hashing(results):
-            print(f"OK    {parsed['function_name']}  {passed}/{total}")
-        else:
-            print(f"FAIL  {parsed['function_name']}  {passed}/{total}")
+        mark = "OK" if is_safe_for_hashing(results) else "FAIL"
+        if mark == "FAIL":
             failed += 1
-    print(f"Checked: {len(files)}  Failed: {failed}")
-    if save:
-        print("Save is not enabled on this command. Hash a passing file by hand.")
+        print(f"{mark:4}  {parsed['function_name']}  {language}  {category}  {passed}/{total}")
+        rows.append((language, category, parsed["function_name"], mark))
+    print("Sorted:")
+    for language, category, name, mark in sorted(rows):
+        print(f"  {language:8} {category:10} {mark:4} {name}")
+    print(f"Checked: {len(paths)}  Failed: {failed}")
     if failed:
         sys.exit(1)
+
 
 def bench_job(job: str, language: str = ""):
     matches = [
@@ -551,7 +565,7 @@ def main():
             sys.exit(1)
 
     elif cmd == "verify-examples":
-        verify_examples(save="--save" in sys.argv)
+        verify_files(sys.argv[2:])
 
     elif cmd == "languages":
         for line in describe_languages():
