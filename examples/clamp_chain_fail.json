@@ -1,0 +1,7 @@
+{
+  "name": "clamp chain must fail",
+  "expect": 2,
+  "steps": [
+    {"name": "stone:util.clamp", "args": [5, 0, 1], "language": "python"}
+  ]
+}
