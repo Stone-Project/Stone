@@ -1,0 +1,8 @@
+{
+  "pack": "pack:missing.one",
+  "description": "Negative test. One job exists, one does not. Verify must fail and must not download.",
+  "order": [
+    "stone:util.clamp",
+    "stone:missing.not_a_job"
+  ]
+}
