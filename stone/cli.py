@@ -251,9 +251,20 @@ def run_steps(path: str):
     for index, step in enumerate(steps, start=1):
         name = step.get("name")
         raw_args = [resolve_step_arg(item, previous) for item in step.get("args") or []]
-        previous = call_hash(name, raw_args, quiet=True)
+        previous = call_hash(
+            name,
+            raw_args,
+            quiet=True,
+            language=step.get("language") or "",
+        )
         print(f"{index}. {name} {raw_args} -> {previous}")
     print(f"Final: {previous}")
+    if "expect" in spec and previous != spec.get("expect"):
+        print(f"Expect: {spec.get('expect')}")
+        print("Run failed. Final result did not match.")
+        sys.exit(1)
+    if "expect" in spec:
+        print(f"Expect: {spec.get('expect')}")
 
 
 def bench_job(job: str, language: str = ""):
