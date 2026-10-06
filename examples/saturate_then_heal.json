@@ -1,0 +1,8 @@
+{
+  "name": "saturate then heal",
+  "expect": 15,
+  "steps": [
+    {"name": "stone:math.saturate", "args": [-1]},
+    {"name": "stone:health.heal", "args": ["$prev", 15, 100]}
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.saturate",
+  "description": "Saturate, then heal. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.saturate",
+    "stone:health.heal"
+  ]
+}
