@@ -75,7 +75,7 @@ Actor-Director is a separate project. It may choose Stone jobs later. It is not 
 - A review step before publish.
 - A real game runtime, Doom port, or engine pack.
 - Automatic backend choice across machines. A time on one PC is not a universal ranking.
-- Order testing of whole chains. Later, after the jobs are honest.
+- Order timing of whole chains is built as `time-runs`.
 - On-rails parameter prompts, and an open mode that proposes a new body. Later. A changed body is a new backend and must pass the same cases.
 
 ## Order
