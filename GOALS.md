@@ -38,6 +38,12 @@ Actor-Director is a separate project. It may choose Stone jobs later. It is not 
 - A mixed chain of damage, C clamp, and heal returns `65`. The same chain with expect `64` exits `1`.
 - `pack:health.turn` verifies with `Missing: 0`. `pack:missing.one` exits `1` and does not download.
 
+### Order timing
+
+- time-runs compares two run files. Passes are the longer chain, with a floor of 5.
+- A winner must stay ahead on every pass. If the passes split, it is a tie.
+- The times stay local. They are not part of the hash and not a ranking for every machine.
+
 ## C
 
 - `examples/clamp.c` and `examples/clamp_c_test.c` are on `main`.
