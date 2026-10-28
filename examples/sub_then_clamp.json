@@ -1,0 +1,8 @@
+{
+  "name": "sub then clamp",
+  "expect": 0,
+  "steps": [
+    {"name": "stone:math.sub", "args": [2, 5]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 5], "language": "python"}
+  ]
+}

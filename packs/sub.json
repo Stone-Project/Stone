@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.sub",
+  "description": "Sub, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.sub",
+    "stone:util.clamp"
+  ]
+}
