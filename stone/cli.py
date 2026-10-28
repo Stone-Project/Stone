@@ -644,7 +644,10 @@ def main():
         print(f"Language: {language}")
         print(f"Status:   verified_external")
         print(f"Saved to: {path}")
-        print("This entry is not callable. The caller does not run this language yet.")
+        if language.lower() == "c":
+            print("C can be called if gcc is on PATH. This entry stays local.")
+        else:
+            print("This entry is not callable. The caller does not run this language yet.")
 
     elif cmd == "publish":
         target = sys.argv[2] if len(sys.argv) > 2 else ""
