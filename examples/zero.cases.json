@@ -1,0 +1,8 @@
+[
+  {"args": [0], "expect": true},
+  {"args": [1], "expect": false},
+  {"args": [-1], "expect": false},
+  {"args": [0.0], "expect": true},
+  {"args": [0.5], "expect": false},
+  {"args": [100], "expect": false}
+]
