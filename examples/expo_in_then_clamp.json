@@ -1,0 +1,8 @@
+{
+  "name": "expo_in then clamp",
+  "expect": 10,
+  "steps": [
+    {"name": "stone:math.expo_in", "args": [1.5]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 10], "language": "python"}
+  ]
+}
