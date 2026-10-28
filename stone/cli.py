@@ -341,9 +341,44 @@ def hash_dir(folder: str, category: str = ""):
                 if not os.path.isfile(path + ".cases.json"):
                     skipped += 1
                     continue
-                print(f"{name} Rust loader not implemented yet.")
-                failed += 1
-                refused += 1
+                rustc = shutil.which("rustc")
+                if not rustc:
+                    print(f"{name} Refused. rustc is not on PATH.")
+                    failed += 1
+                    refused += 1
+                    continue
+                with open(path + ".cases.json", "r", encoding="utf-8") as f:
+                    rs_cases = json.load(f)
+                rs_ok = isinstance(rs_cases, list) and bool(rs_cases)
+                if rs_ok:
+                    build_dir = os.path.join(os.getcwd(), "build")
+                    os.makedirs(build_dir, exist_ok=True)
+                    dll_path = os.path.join(build_dir, "stone_rs.dll")
+                    built = subprocess.run([rustc, "--crate-type", "cdylib", "-O", "-o", dll_path, path], capture_output=True, text=True)
+                    if built.returncode != 0:
+                        print(built.stderr, end="")
+                        rs_ok = False
+                if rs_ok:
+                    try:
+                        import ctypes
+                        rs_fn = getattr(ctypes.CDLL(dll_path), rs_function)
+                        rs_fn.restype = ctypes.c_int
+                        rs_fn.argtypes = [ctypes.c_int] * len(rs_cases[0].get("args") or [])
+                        for case in rs_cases:
+                            actual = int(rs_fn(*[int(item) for item in case.get("args", [])]))
+                            if actual != case.get("expect"):
+                                print(f"Case failed: got {actual}, expected {case.get('expect')}")
+                                rs_ok = False
+                                break
+                    except Exception as e:
+                        print(f"Case error: {e}")
+                        rs_ok = False
+                if not rs_ok:
+                    print(f"{name} Rust cases failed.")
+                    failed += 1
+                    continue
+                print(f"{name} Rust cases passed. Loader not recording yet.")
+                skipped += 1
                 continue
             if name.endswith(".c"):
                 c_job = ""
