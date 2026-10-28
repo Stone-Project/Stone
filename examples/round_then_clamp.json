@@ -1,0 +1,8 @@
+{
+  "name": "round then clamp",
+  "expect": 5,
+  "steps": [
+    {"name": "stone:math.round", "args": [6.7]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 5], "language": "python"}
+  ]
+}
