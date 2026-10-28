@@ -1,0 +1,8 @@
+{
+  "name": "mix then clamp",
+  "expect": 4,
+  "steps": [
+    {"name": "stone:math.mix", "args": [2, 6, 0.75]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 4], "language": "python"}
+  ]
+}
