@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.half",
+  "description": "Half, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.half",
+    "stone:util.clamp"
+  ]
+}
