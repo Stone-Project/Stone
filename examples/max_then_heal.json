@@ -1,0 +1,8 @@
+{
+  "name": "max then heal",
+  "expect": 15,
+  "steps": [
+    {"name": "stone:math.max_value", "args": [3, 8]},
+    {"name": "stone:health.heal", "args": ["$prev", 7, 100]}
+  ]
+}
