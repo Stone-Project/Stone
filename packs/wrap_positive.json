@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.wrap_positive",
+  "description": "Wrap_positive, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.wrap_positive",
+    "stone:util.clamp"
+  ]
+}

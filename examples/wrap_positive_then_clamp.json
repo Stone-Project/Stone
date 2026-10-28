@@ -1,0 +1,8 @@
+{
+  "name": "wrap_positive then clamp",
+  "expect": 2,
+  "steps": [
+    {"name": "stone:math.wrap_positive", "args": [-1, 4]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 2], "language": "python"}
+  ]
+}
