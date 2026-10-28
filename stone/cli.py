@@ -8,6 +8,7 @@ import time
 import hashlib
 import importlib.util
 import traceback
+import subprocess
 from .hasher.parser import parse_file
 from .hasher.normalizer import normalize
 from .hasher.tester import run_basic_tests, is_safe_for_hashing
@@ -58,6 +59,7 @@ Usage:
 
 Commands:
   hash-function <file> [--intent "what it does"] [--depends name ...] [--job name] [--language python] [--category name]
+  hash-dir <folder>        Hash every .py in a folder that has a sibling .cases.json
   list [category]
   show <short-id>
   delete <short-id>
@@ -277,6 +279,37 @@ def run_steps(path: str, quiet: bool = False):
         print(f"Expect: {spec.get('expect')}")
 
 
+
+def hash_dir(folder: str):
+    """Hash every .py in a folder that has a sibling .cases.json. Skip the rest."""
+    if not folder or not os.path.isdir(folder):
+        print("Usage: hash-dir <folder>")
+        sys.exit(1)
+    hashed = 0
+    skipped = 0
+    failed = 0
+    for name in sorted(os.listdir(folder)):
+        if not name.endswith(".py"):
+            continue
+        path = os.path.join(folder, name)
+        cases = os.path.splitext(path)[0] + ".cases.json"
+        if not os.path.isfile(cases):
+            skipped += 1
+            continue
+        print(f"--- {name}")
+        result = subprocess.run(
+            [sys.executable, "-m", "stone.cli", "hash-function", path],
+            capture_output=True, text=True
+        )
+        print(result.stdout, end="")
+        if result.returncode != 0:
+            failed += 1
+            print(result.stderr, end="")
+            continue
+        hashed += 1
+    print(f"Hashed: {hashed}")
+    print(f"Skipped: {skipped}")
+    print(f"Failed: {failed}")
 
 def time_runs(path_a: str, path_b: str):
     """Time two run files. Passes follow the longer chain. Name a winner only if the same file stays ahead."""
@@ -508,6 +541,9 @@ def main():
             print("\n--- Debug traceback ---")
             traceback.print_exc()
             sys.exit(1)
+
+    elif cmd == "hash-dir":
+        hash_dir(sys.argv[2] if len(sys.argv) > 2 else "")
 
     elif cmd == "list":
         entries = list_hashes()
