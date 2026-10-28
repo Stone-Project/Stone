@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.ceil",
+  "description": "Ceil, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.ceil",
+    "stone:util.clamp"
+  ]
+}

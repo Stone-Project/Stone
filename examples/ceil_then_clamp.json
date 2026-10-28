@@ -1,0 +1,8 @@
+{
+  "name": "ceil then clamp",
+  "expect": 2,
+  "steps": [
+    {"name": "stone:math.ceil", "args": [2.2]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 2], "language": "python"}
+  ]
+}
