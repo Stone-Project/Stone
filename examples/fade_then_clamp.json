@@ -1,0 +1,8 @@
+{
+  "name": "fade then clamp",
+  "expect": 1,
+  "steps": [
+    {"name": "stone:math.fade", "args": [2]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 1], "language": "python"}
+  ]
+}
