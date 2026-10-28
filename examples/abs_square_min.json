@@ -1,0 +1,9 @@
+{
+  "name": "abs square min",
+  "expect": 10,
+  "steps": [
+    {"name": "stone:math.abs_value", "args": [-4]},
+    {"name": "stone:math.square", "args": ["$prev"]},
+    {"name": "stone:math.min_value", "args": ["$prev", 10]}
+  ]
+}
