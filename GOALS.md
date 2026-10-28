@@ -66,6 +66,12 @@ Actor-Director is a separate project. It may choose Stone jobs later. It is not 
 - Do not hash a `.c` file with the Python hasher.
 - Do not rehash the catalog when an auto hasher arrives. Same normalized body keeps the same hash. A rule change is a new version, beside the old one, not over it. Similarity may report. It must not merge.
 
+### Folder hashing
+
+- hash-dir hashes every .py in a folder that has a sibling .cases.json.
+- A file that already MATCHES is skipped so its category and times are kept.
+- A new file is hashed with the guessed category.
+
 ## Not built
 
 - An auto hasher. Hash by hand until then.
