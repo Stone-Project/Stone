@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.double",
+  "description": "Double, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.double",
+    "stone:util.clamp"
+  ]
+}
