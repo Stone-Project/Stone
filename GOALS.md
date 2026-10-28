@@ -75,7 +75,6 @@ Actor-Director is a separate project. It may choose Stone jobs later. It is not 
 - A review step before publish.
 - A real game runtime, Doom port, or engine pack.
 - Automatic backend choice across machines. A time on one PC is not a universal ranking.
-- Order timing of whole chains is built as `time-runs`.
 - On-rails parameter prompts, and an open mode that proposes a new body. Later. A changed body is a new backend and must pass the same cases.
 
 ## Order
@@ -85,7 +84,7 @@ Actor-Director is a separate project. It may choose Stone jobs later. It is not 
 3. A faster C path has to win a bench before it becomes the default.
 4. Packs for real use, still without copying an engine.
 5. An auto hasher comes after that, and it adds to the existing hashes.
-6. Order testing of chains comes after the jobs are honest.
+6. Order timing is built as `time-runs`.
 7. Actor-Director integration stays later and separately licensed.
 
 ## Done
@@ -94,3 +93,4 @@ Actor-Director is a separate project. It may choose Stone jobs later. It is not 
 - Language field, language filter, C clamp caller, expect check, and a bench where Python won.
 - Pass and fail chains, pass and fail packs, and hand-hashed jobs for damage, heal, clamp, gravity, overlap, lerp, saturate, map range, sign, absolute value, square, approach, min, max, wrap, deadzone, and drag.
 - `report` for match, similar, or new. C backends for min, sign, max, abs, and square. The record-external message for C is accurate.
+- Order timing of whole chains is built as `time-runs`.
