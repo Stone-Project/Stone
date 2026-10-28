@@ -85,6 +85,12 @@ Actor-Director is a separate project. It may choose Stone jobs later. It is not 
 - A matching C file is skipped.
 - The six existing C entries were re-recorded under the new hash.
 - The old entries are backed up in `%TEMP%\stone_library_backup_rerecord`.
+- A .rs file is handed to the Rust path if it has two comments:
+  - `// stone:job stone:util.clamp`
+  - `// stone:function clamp_rs`
+- It needs a sibling .cases.json named `<file>.rs.cases.json`.
+- It is currently refused with "Rust loader not implemented yet."
+- The C and Python paths are unchanged.
 
 ## Not built
 
