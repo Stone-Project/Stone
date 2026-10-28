@@ -323,6 +323,28 @@ def hash_dir(folder: str, category: str = ""):
         if not name.endswith(".py"):
             if name.endswith(".cases.json"):
                 continue
+            if name.endswith(".zig"):
+                zig_job = ""
+                zig_function = ""
+                with open(path, "r", encoding="utf-8") as f:
+                    for line in f:
+                        text = line.strip()
+                        if text.startswith("// stone:job "):
+                            zig_job = text[len("// stone:job "):].strip()
+                        elif text.startswith("// stone:function "):
+                            zig_function = text[len("// stone:function "):].strip()
+                if not zig_job or not zig_function:
+                    print(f"{name} Refused. No stone:job or stone:function.")
+                    failed += 1
+                    refused += 1
+                    continue
+                if not os.path.isfile(path + ".cases.json"):
+                    skipped += 1
+                    continue
+                print(f"{name} Zig loader not implemented yet.")
+                failed += 1
+                refused += 1
+                continue
             if name.endswith(".go"):
                 go_job = ""
                 go_function = ""
