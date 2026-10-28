@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.pingpong",
+  "description": "Pingpong, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.pingpong",
+    "stone:util.clamp"
+  ]
+}
