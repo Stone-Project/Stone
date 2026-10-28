@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.quintic",
+  "description": "Quintic, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.quintic",
+    "stone:util.clamp"
+  ]
+}

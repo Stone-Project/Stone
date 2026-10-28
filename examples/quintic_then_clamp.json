@@ -1,0 +1,8 @@
+{
+  "name": "quintic then clamp",
+  "expect": 10,
+  "steps": [
+    {"name": "stone:math.quintic", "args": [2]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 10], "language": "python"}
+  ]
+}
