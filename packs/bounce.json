@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.bounce",
+  "description": "Bounce, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.bounce",
+    "stone:util.clamp"
+  ]
+}
