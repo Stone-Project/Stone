@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.sine_in_out",
+  "description": "Sine_in_out, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.sine_in_out",
+    "stone:util.clamp"
+  ]
+}
