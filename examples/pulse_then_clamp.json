@@ -1,0 +1,8 @@
+{
+  "name": "pulse then clamp",
+  "expect": 0.5,
+  "steps": [
+    {"name": "stone:math.pulse", "args": [5, 0, 10]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 0.5], "language": "python"}
+  ]
+}

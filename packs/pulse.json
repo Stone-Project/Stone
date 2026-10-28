@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.pulse",
+  "description": "Pulse, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.pulse",
+    "stone:util.clamp"
+  ]
+}
