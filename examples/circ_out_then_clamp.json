@@ -1,0 +1,8 @@
+{
+  "name": "circ_out then clamp",
+  "expect": 1,
+  "steps": [
+    {"name": "stone:math.circ_out", "args": [4]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 1], "language": "python"}
+  ]
+}
