@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.min",
+  "description": "Minimum of two numbers, then heal. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.min_value",
+    "stone:health.heal"
+  ]
+}
