@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.quantize",
+  "description": "Quantize, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.quantize",
+    "stone:util.clamp"
+  ]
+}

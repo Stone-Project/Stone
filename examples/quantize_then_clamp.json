@@ -1,0 +1,8 @@
+{
+  "name": "quantize then clamp",
+  "expect": 10,
+  "steps": [
+    {"name": "stone:math.quantize", "args": [17, 5]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 10], "language": "python"}
+  ]
+}
