@@ -1,0 +1,8 @@
+{
+  "name": "wrap then heal",
+  "expect": 15,
+  "steps": [
+    {"name": "stone:math.wrap_value", "args": [12, 0, 10]},
+    {"name": "stone:health.heal", "args": ["$prev", 13, 100]}
+  ]
+}

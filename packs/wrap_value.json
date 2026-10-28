@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.wrap",
+  "description": "Wrap a value into a range, then heal. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.wrap_value",
+    "stone:health.heal"
+  ]
+}
