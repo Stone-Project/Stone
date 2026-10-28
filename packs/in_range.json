@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.in_range",
+  "description": "In_range, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.in_range",
+    "stone:util.clamp"
+  ]
+}
