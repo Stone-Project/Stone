@@ -1,0 +1,8 @@
+{
+  "name": "back_in then clamp",
+  "expect": 1,
+  "steps": [
+    {"name": "stone:math.back_in", "args": [2]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 1], "language": "python"}
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.back_in",
+  "description": "Back_in, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.back_in",
+    "stone:util.clamp"
+  ]
+}
