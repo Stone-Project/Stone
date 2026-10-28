@@ -1,0 +1,9 @@
+{
+  "name": "order a",
+  "expect": 5,
+  "steps": [
+    {"name": "stone:math.abs_value", "args": [-3]},
+    {"name": "stone:math.min_value", "args": ["$prev", 5]},
+    {"name": "stone:math.max_value", "args": ["$prev", 5]}
+  ]
+}
