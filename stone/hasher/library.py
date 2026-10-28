@@ -100,7 +100,7 @@ def save_external(source_file: str, function_name: str, job: str, language: str,
     language = (language or "c").strip().lower()
     function_name = (function_name or "unknown").strip()
     job = (job or "").strip()
-    content_hash = hashlib_sha(f"{language}:{job}:{function_name}:{source_file}")
+    content_hash = hashlib_sha(f"{language}:{job}:{function_name}")
     short_id = content_hash[:16]
     filepath = get_hash_path(content_hash)
     existing = load_hash(content_hash)
