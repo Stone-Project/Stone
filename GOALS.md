@@ -71,6 +71,8 @@ Actor-Director is a separate project. It may choose Stone jobs later. It is not 
 - hash-dir hashes every .py in a folder that has a sibling .cases.json.
 - A file that already MATCHES is skipped so its category and times are kept.
 - A new file is hashed with the guessed category.
+- set-category changes the category on a local entry.
+- It does not change the content hash.
 
 ## Not built
 
