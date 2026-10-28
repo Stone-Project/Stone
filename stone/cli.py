@@ -295,7 +295,7 @@ def report_file(path: str):
     name = parsed["function_name"]
     category = guess_category(name, path, parsed["code"])
     exact = find_backends(name)
-    similar = [item for item in search_by_intent(name) if item.get("function_name") != name]
+    similar = [item for item in search_by_intent(name.replace("_", " ")) if item.get("function_name") != name]
     print(f"File:     {path}")
     print(f"Function: {name}")
     print(f"Guess:    {category}")
