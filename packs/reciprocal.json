@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.reciprocal",
+  "description": "Reciprocal, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.reciprocal",
+    "stone:util.clamp"
+  ]
+}
