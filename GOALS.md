@@ -73,6 +73,8 @@ Actor-Director is a separate project. It may choose Stone jobs later. It is not 
 - A new file is hashed with the guessed category.
 - set-category changes the category on a local entry.
 - It does not change the content hash.
+- hash-dir takes an optional category.
+- That category applies to new files only. A match is still skipped.
 
 ## Not built
 
