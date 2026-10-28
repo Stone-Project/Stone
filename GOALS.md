@@ -75,6 +75,13 @@ Actor-Director is a separate project. It may choose Stone jobs later. It is not 
 - It does not change the content hash.
 - hash-dir takes an optional category.
 - That category applies to new files only. A match is still skipped.
+- A .c file is handed to the C path if it has two comments:
+  - `// stone:job stone:util.clamp`
+  - `// stone:function clamp_c`
+- It needs a sibling .cases.json named `<file>.c.cases.json`.
+- It is compiled once, tested, and recorded only if every case passes.
+- If gcc is missing, it is refused.
+- The hash currently includes the source path, so the same file from a different folder creates a second entry.
 
 ## Not built
 
