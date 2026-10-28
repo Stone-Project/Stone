@@ -17,11 +17,12 @@ Actor-Director is a separate project. It may choose Stone jobs later. It is not 
 - Category, hierarchical name, intent, `depends_on`, and a shared job name.
 - `--category` overrides the guess when hashing. The content hash does not change.
 - `verify-examples` checks a sequence of local files, names the language, and sorts the report. It does not hash or publish.
+- `report` says MATCH, SIMILAR, or NEW for a local file. It does not hash or publish.
 - Packs and verify. Missing jobs are reported, not downloaded.
 - `call` and `run`. `$prev` passes the last result. A run `expect` fails the chain if the final value does not match.
 - `--backend` forces one verified backend. `--language` filters by language.
 - `bench` re-times verified Python backends and a recorded C backend. Timing is local and is not part of the hash. C bench time excludes compile.
-- `record-external` can note a non-Python pass. A C entry can be called if `gcc` is on PATH.
+- `record-external` can note a non-Python pass. For C it says the entry can be called if `gcc` is on PATH.
 - A C call prints Expect from the sibling cases file and exits if the result does not match.
 - `ADDING_A_LANGUAGE.md` documents how to add a loader. The verifier does not invent one.
 - Publish stays off. `library/` stays off GitHub.
@@ -32,15 +33,18 @@ Actor-Director is a separate project. It may choose Stone jobs later. It is not 
 - Damage, clamp, and heal return `65` against `65`.
 - Gravity then clamp returns `8`. Overlap returns `True`. Lerp then clamp returns `4`. Saturate then heal returns `15`. Map range then clamp returns `40`.
 - Sign then heal returns `16`. Absolute value then heal returns `15`. Square then heal returns `15`.
+- Approach then heal returns `15`. Min then heal returns `15`. Max then heal returns `15`. Wrap then heal returns `15`. Deadzone then heal returns `15`. Drag then heal returns `15`.
+- Abs, square, and min return `10` against `10` with no heal step.
 - A mixed chain of damage, C clamp, and heal returns `65`. The same chain with expect `64` exits `1`.
 - `pack:health.turn` verifies with `Missing: 0`. `pack:missing.one` exits `1` and does not download.
 
 ## C
 
 - `examples/clamp.c` and `examples/clamp_c_test.c` are on `main`.
+- C backends for min, sign, max, abs, and square are on `main`. Each passed the same integer cases as the Python job.
 - The desktop driver passed the same three clamp cases. `gcc` is available there through MSYS2.
-- `--language c` compiles `clamp.c` locally and calls `clamp_c`. It does not install a compiler.
-- A C call of `5 0 1` returned `1` and expected `1`.
+- `--language c` compiles a sibling `.c` file locally and calls the recorded symbol. It does not install a compiler.
+- A C call of clamp `5 0 1` returned `1` and expected `1`.
 - On the first bench, Python won. `clamp_minmax` was about `0.179 us`, `clamp` about `0.259 us`, and `clamp_c` about `1.616 us`. The DLL call cost more than the C function saved.
 - `build/` and the DLL stay local. A `verified_external` note may exist locally and is not pushed.
 
@@ -82,4 +86,5 @@ Actor-Director is a separate project. It may choose Stone jobs later. It is not 
 
 - Health category, `run`, inverse-sqrt backends, `bench`, clamp backends, category fix.
 - Language field, language filter, C clamp caller, expect check, and a bench where Python won.
-- Pass and fail chains, pass and fail packs, and hand-hashed jobs for damage, heal, clamp, gravity, overlap, lerp, saturate, map range, sign, absolute value, and square.
+- Pass and fail chains, pass and fail packs, and hand-hashed jobs for damage, heal, clamp, gravity, overlap, lerp, saturate, map range, sign, absolute value, square, approach, min, max, wrap, deadzone, and drag.
+- `report` for match, similar, or new. C backends for min, sign, max, abs, and square. The record-external message for C is accurate.
