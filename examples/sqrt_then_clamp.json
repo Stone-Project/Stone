@@ -1,0 +1,8 @@
+{
+  "name": "sqrt then clamp",
+  "expect": 3,
+  "steps": [
+    {"name": "stone:math.sqrt", "args": [16]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 3], "language": "python"}
+  ]
+}
