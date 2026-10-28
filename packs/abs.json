@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.abs",
+  "description": "Absolute value, then heal. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.abs_value",
+    "stone:health.heal"
+  ]
+}
