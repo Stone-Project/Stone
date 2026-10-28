@@ -91,6 +91,17 @@ Actor-Director is a separate project. It may choose Stone jobs later. It is not 
 - It needs a sibling .cases.json named `<file>.rs.cases.json`.
 - It is currently refused with "Rust loader not implemented yet."
 - The C and Python paths are unchanged.
+- A .go file is handed to the Go path if it has two comments:
+  - `// stone:job stone:util.clamp`
+  - `// stone:function clamp_go`
+- It needs a sibling .cases.json named `<file>.go.cases.json`.
+- It is currently refused with "Go loader not implemented yet."
+- A .zig file is handed to the Zig path if it has two comments:
+  - `// stone:job stone:util.clamp`
+  - `// stone:function clamp_zig`
+- It needs a sibling .cases.json named `<file>.zig.cases.json`.
+- It is currently refused with "Zig loader not implemented yet."
+- The C, Python, and Rust paths are unchanged.
 
 ## Not built
 
