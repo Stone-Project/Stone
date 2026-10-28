@@ -15,7 +15,7 @@ from .hasher.normalizer import normalize
 from .hasher.tester import run_basic_tests, is_safe_for_hashing
 from .hasher.library import save_hash, save_external, list_hashes, get_by_short_id, delete_hash, search_by_intent, decide_status, find_by_name, find_backends, get_hash_path
 from .hasher.categorize import guess_category
-from .hasher.c_caller import call_c, time_c
+from .hasher.c_caller import call_c, time_c, find_gcc, load_c
 from .hasher.languages import describe_languages, admit_source
 
 def generate_content_hash(normalized_code: str) -> str:
@@ -342,6 +342,41 @@ def hash_dir(folder: str, category: str = ""):
                     skipped += 1
                     continue
                 print(f"--- {name}")
+                if not find_gcc():
+                    print(f"{name} Refused. gcc not on PATH.")
+                    failed += 1
+                    refused += 1
+                    continue
+                with open(path + ".cases.json", "r", encoding="utf-8") as f:
+                    c_cases = json.load(f)
+                c_ok = isinstance(c_cases, list) and bool(c_cases)
+                c_fn = None
+                if c_ok:
+                    try:
+                        c_fn = load_c(path, c_function, len(c_cases[0].get("args") or []))
+                    except Exception as e:
+                        print(f"Case error: {e}")
+                        c_ok = False
+                for case in c_cases if c_ok else []:
+                    try:
+                        actual = int(c_fn(*[int(item) for item in case.get("args", [])]))
+                    except Exception as e:
+                        print(f"Case error: {e}")
+                        c_ok = False
+                        break
+                    if actual != case.get("expect"):
+                        print(f"Case failed: got {actual}, expected {case.get('expect')}")
+                        c_ok = False
+                        break
+                if not c_ok:
+                    with open(path, "r", encoding="utf-8") as f:
+                        short = generate_content_hash(f.read())[:16]
+                    shutil.copyfile(path, os.path.join(shelf, short + ".c"))
+                    shutil.copyfile(path + ".cases.json", os.path.join(shelf, short + ".c.cases.json"))
+                    print(f"{name} Untested. Saved to shelf.")
+                    failed += 1
+                    continue
+                print("C cases passed")
                 result = subprocess.run(
                     [sys.executable, "-m", "stone.cli", "record-external", path, "--job", c_job, "--language", "c", "--function", c_function],
                     capture_output=True, text=True
