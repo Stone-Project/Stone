@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.dec",
+  "description": "Dec, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.dec",
+    "stone:util.clamp"
+  ]
+}
