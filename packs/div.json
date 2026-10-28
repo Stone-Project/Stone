@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.div",
+  "description": "Div, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.div",
+    "stone:util.clamp"
+  ]
+}
