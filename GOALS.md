@@ -82,6 +82,10 @@ Actor-Director is a separate project. It may choose Stone jobs later. It is not 
 - It is compiled once, tested, and recorded only if every case passes.
 - If gcc is missing, it is refused.
 - The hash currently includes the source path, so the same file from a different folder creates a second entry.
+- The C hash is now built from language, job, and function only.
+- A matching C file is skipped.
+- The six existing C entries were re-recorded under the new hash.
+- The old entries are backed up in `%TEMP%\stone_library_backup_rerecord`.
 
 ## Not built
 
