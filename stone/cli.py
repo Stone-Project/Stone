@@ -312,10 +312,18 @@ def hash_dir(folder: str, category: str = ""):
     hashed = 0
     skipped = 0
     failed = 0
+    refused = 0
     for name in sorted(os.listdir(folder)):
-        if not name.endswith(".py"):
-            continue
         path = os.path.join(folder, name)
+        if not os.path.isfile(path):
+            continue
+        if not name.endswith(".py"):
+            if name.endswith(".cases.json"):
+                continue
+            print(f"{name} Refused. Not Python.")
+            failed += 1
+            refused += 1
+            continue
         cases = os.path.splitext(path)[0] + ".cases.json"
         if not os.path.isfile(cases):
             skipped += 1
@@ -354,6 +362,8 @@ def hash_dir(folder: str, category: str = ""):
     print(f"Hashed: {hashed}")
     print(f"Skipped: {skipped}")
     print(f"Failed: {failed}")
+    if refused:
+        sys.exit(1)
 
 def time_runs(path_a: str, path_b: str):
     """Time two run files. Passes follow the longer chain. Name a winner only if the same file stays ahead."""
