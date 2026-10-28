@@ -1,0 +1,8 @@
+{
+  "name": "drag then heal",
+  "expect": 15,
+  "steps": [
+    {"name": "stone:physics.apply_drag", "args": [10, 0.5, 1]},
+    {"name": "stone:health.heal", "args": ["$prev", 10, 100]}
+  ]
+}
