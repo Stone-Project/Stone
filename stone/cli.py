@@ -342,6 +342,10 @@ def hash_dir(folder: str, category: str = ""):
             print("MATCH, skipped")
             skipped += 1
             continue
+        if "SIMILAR" in report.stdout:
+            print(f"{name} SIMILAR, skipped. Not hashed.")
+            skipped += 1
+            continue
         if "NEW" not in report.stdout and "SIMILAR" not in report.stdout:
             failed += 1
             print(report.stdout, end="")
