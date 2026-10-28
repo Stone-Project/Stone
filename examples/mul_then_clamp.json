@@ -1,0 +1,8 @@
+{
+  "name": "mul then clamp",
+  "expect": 5,
+  "steps": [
+    {"name": "stone:math.mul", "args": [3, 4]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 5], "language": "python"}
+  ]
+}
