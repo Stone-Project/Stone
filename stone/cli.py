@@ -59,7 +59,7 @@ Usage:
 
 Commands:
   hash-function <file> [--intent "what it does"] [--depends name ...] [--job name] [--language python] [--category name]
-  hash-dir <folder>        Hash every .py in a folder that has a sibling .cases.json
+  hash-dir <folder> [category]  Hash every .py with a sibling cases file. Category applies to new files only.
   set-category <short-id> <category>  Set the category on a local entry. Does not change the hash.
   list [category]
   show <short-id>
@@ -304,7 +304,7 @@ def set_category(short_id: str, category: str):
     print(f"Name: {data.get('hierarchical_name', '')}")
     print("Hash unchanged.")
 
-def hash_dir(folder: str):
+def hash_dir(folder: str, category: str = ""):
     """Hash every .py in a folder that has a sibling .cases.json. Skip the rest."""
     if not folder or not os.path.isdir(folder):
         print("Usage: hash-dir <folder>")
@@ -338,8 +338,11 @@ def hash_dir(folder: str):
             failed += 1
             print(report.stdout, end="")
             continue
+        argv = [sys.executable, "-m", "stone.cli", "hash-function", path]
+        if category:
+            argv += ["--category", category]
         result = subprocess.run(
-            [sys.executable, "-m", "stone.cli", "hash-function", path],
+            argv,
             capture_output=True, text=True
         )
         print(result.stdout, end="")
@@ -584,7 +587,7 @@ def main():
             sys.exit(1)
 
     elif cmd == "hash-dir":
-        hash_dir(sys.argv[2] if len(sys.argv) > 2 else "")
+        hash_dir(sys.argv[2] if len(sys.argv) > 2 else "", sys.argv[3] if len(sys.argv) > 3 else "")
 
     elif cmd == "set-category":
         set_category(sys.argv[2] if len(sys.argv) > 2 else "", sys.argv[3] if len(sys.argv) > 3 else "")
