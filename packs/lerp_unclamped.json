@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.lerp_unclamped",
+  "description": "Lerp_unclamped, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.lerp_unclamped",
+    "stone:util.clamp"
+  ]
+}
