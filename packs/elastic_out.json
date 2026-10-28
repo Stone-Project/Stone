@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.elastic_out",
+  "description": "Elastic_out, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.elastic_out",
+    "stone:util.clamp"
+  ]
+}
