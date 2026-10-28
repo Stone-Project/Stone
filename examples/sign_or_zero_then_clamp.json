@@ -1,0 +1,8 @@
+{
+  "name": "sign_or_zero then clamp",
+  "expect": 0,
+  "steps": [
+    {"name": "stone:math.sign_or_zero", "args": [-4]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 5], "language": "python"}
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.sign_or_zero",
+  "description": "Sign_or_zero, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.sign_or_zero",
+    "stone:util.clamp"
+  ]
+}
