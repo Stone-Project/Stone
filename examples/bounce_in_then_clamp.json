@@ -1,0 +1,8 @@
+{
+  "name": "bounce_in then clamp",
+  "expect": 0.5,
+  "steps": [
+    {"name": "stone:math.bounce_in", "args": [1]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 0.5], "language": "python"}
+  ]
+}
