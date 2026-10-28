@@ -1,0 +1,8 @@
+{
+  "name": "deadzone then heal",
+  "expect": 15,
+  "steps": [
+    {"name": "stone:math.deadzone", "args": [0.2, 0.5]},
+    {"name": "stone:health.heal", "args": ["$prev", 15, 100]}
+  ]
+}
