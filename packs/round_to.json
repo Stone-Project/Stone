@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.round_to",
+  "description": "Round_to, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.round_to",
+    "stone:util.clamp"
+  ]
+}
