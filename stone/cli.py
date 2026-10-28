@@ -70,7 +70,7 @@ Commands:
   languages [file]         Show which languages have a loader and a tool
   verify-examples [files...]  Test a sequence of local files. Defaults to cased examples. Does not hash or publish.
   report <file>            Match, similar, or new. Does not hash or publish.
-  time-runs <file> <file>  Time two run files three times. Winner only if one stays ahead.
+  time-runs <file> <file>  Time two run files. Passes follow the longer chain. Winner only if one stays ahead.
   publish <short-id>       Not enabled yet (local library only)
   packs                    List local pack files
   verify [pack-file]       Check pack jobs against the local library
@@ -279,12 +279,18 @@ def run_steps(path: str, quiet: bool = False):
 
 
 def time_runs(path_a: str, path_b: str):
-    """Time two run files three times. Name a winner only if the same file stays ahead."""
+    """Time two run files. Passes follow the longer chain. Name a winner only if the same file stays ahead."""
     if not path_a or not path_b:
         print("Usage: time-runs <file> <file>")
         sys.exit(1)
+    with open(path_a, encoding="utf-8") as f:
+        steps_a = len(json.load(f).get("steps", []))
+    with open(path_b, encoding="utf-8") as f:
+        steps_b = len(json.load(f).get("steps", []))
+    passes = max(5, steps_a, steps_b)
+    print(f"Passes: {passes}")
     wins = {"a": 0, "b": 0, "tie": 0}
-    for pass_number in (1, 2, 3):
+    for pass_number in range(1, passes + 1):
         started = time.perf_counter()
         run_steps(path_a, quiet=True)
         a_ms = (time.perf_counter() - started) * 1000
@@ -299,9 +305,9 @@ def time_runs(path_a: str, path_b: str):
             mark = "b"
         wins[mark] += 1
         print(f"Pass {pass_number}: A {a_ms:.1f} ms  B {b_ms:.1f} ms  {mark}")
-    if wins["a"] == 3:
+    if wins["a"] == passes:
         print("Winner: A")
-    elif wins["b"] == 3:
+    elif wins["b"] == passes:
         print("Winner: B")
     else:
         print("Winner: tie")
