@@ -69,6 +69,7 @@ Commands:
   record-external <file> --job name --language c --function name
   languages [file]         Show which languages have a loader and a tool
   verify-examples [files...]  Test a sequence of local files. Defaults to cased examples. Does not hash or publish.
+  report <file>            Match, similar, or new. Does not hash or publish.
   publish <short-id>       Not enabled yet (local library only)
   packs                    List local pack files
   verify [pack-file]       Check pack jobs against the local library
@@ -271,6 +272,47 @@ def run_steps(path: str):
     if "expect" in spec:
         print(f"Expect: {spec.get('expect')}")
 
+
+
+def report_file(path: str):
+    """Report whether a local file matches a job, looks similar, or is new. Does not hash or publish."""
+    if not path:
+        print("Usage: report <file>")
+        sys.exit(1)
+    admitted = admit_source(path)
+    if not admitted.get("ok"):
+        print(f"HOLD  {path}  {admitted.get('reason')}")
+        print("Do not file this as verified.")
+        sys.exit(1)
+    if admitted.get("language") != "python":
+        print(f"HOLD  {path}  language={admitted.get('language')}  no Python report")
+        print("Do not file this as verified.")
+        sys.exit(1)
+    parsed = parse_file(path)
+    if not parsed:
+        print(f"FAIL  {path}  could not parse")
+        sys.exit(1)
+    name = parsed["function_name"]
+    category = guess_category(name, path, parsed["code"])
+    exact = find_backends(name)
+    similar = [item for item in search_by_intent(name) if item.get("function_name") != name]
+    print(f"File:     {path}")
+    print(f"Function: {name}")
+    print(f"Guess:    {category}")
+    if exact:
+        entry = exact[0]
+        print(f"MATCH     {entry.get('hierarchical_name') or entry.get('job')}  {entry.get('short_id')}  {entry.get('status')}")
+        print("Same function name is already in the local library. Do not add a second job.")
+        return
+    if similar:
+        print("SIMILAR")
+        for entry in similar[:5]:
+            print(f"  {entry.get('hierarchical_name') or entry.get('function_name')}  {entry.get('short_id')}")
+        print("Looks related. Review before hashing. Do not file as verified.")
+        return
+    print("NEW")
+    print(f"No local job named {name}. Proposed category: {category}.")
+    print("Do not file as verified until cases pass and a person hashes it.")
 
 
 def verify_files(paths: list):
@@ -571,6 +613,9 @@ def main():
 
     elif cmd == "verify-examples":
         verify_files(sys.argv[2:])
+
+    elif cmd == "report":
+        report_file(sys.argv[2] if len(sys.argv) > 2 else "")
 
     elif cmd == "languages":
         for line in describe_languages():
