@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.negative",
+  "description": "Negative, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.negative",
+    "stone:util.clamp"
+  ]
+}
