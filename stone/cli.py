@@ -377,6 +377,11 @@ def hash_dir(folder: str, category: str = ""):
                     failed += 1
                     continue
                 print("C cases passed")
+                c_match = next((e for e in list_hashes() if (e.get("language") or "").lower() == "c" and e.get("job") == c_job and e.get("function_name") == c_function), None)
+                if c_match:
+                    print(f"{name} MATCH, skipped.")
+                    skipped += 1
+                    continue
                 result = subprocess.run(
                     [sys.executable, "-m", "stone.cli", "record-external", path, "--job", c_job, "--language", "c", "--function", c_function],
                     capture_output=True, text=True
