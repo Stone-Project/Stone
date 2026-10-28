@@ -1,0 +1,8 @@
+{
+  "name": "negate then clamp",
+  "expect": 5,
+  "steps": [
+    {"name": "stone:math.negate", "args": [-7]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 5], "language": "python"}
+  ]
+}
