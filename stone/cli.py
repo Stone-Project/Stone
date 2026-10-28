@@ -12,7 +12,7 @@ import subprocess
 from .hasher.parser import parse_file
 from .hasher.normalizer import normalize
 from .hasher.tester import run_basic_tests, is_safe_for_hashing
-from .hasher.library import save_hash, save_external, list_hashes, get_by_short_id, delete_hash, search_by_intent, decide_status, find_by_name, find_backends
+from .hasher.library import save_hash, save_external, list_hashes, get_by_short_id, delete_hash, search_by_intent, decide_status, find_by_name, find_backends, get_hash_path
 from .hasher.categorize import guess_category
 from .hasher.c_caller import call_c, time_c
 from .hasher.languages import describe_languages, admit_source
@@ -60,6 +60,7 @@ Usage:
 Commands:
   hash-function <file> [--intent "what it does"] [--depends name ...] [--job name] [--language python] [--category name]
   hash-dir <folder>        Hash every .py in a folder that has a sibling .cases.json
+  set-category <short-id> <category>  Set the category on a local entry. Does not change the hash.
   list [category]
   show <short-id>
   delete <short-id>
@@ -279,6 +280,29 @@ def run_steps(path: str, quiet: bool = False):
         print(f"Expect: {spec.get('expect')}")
 
 
+
+def set_category(short_id: str, category: str):
+    """Set the category on a local entry. Does not change the content hash."""
+    if not short_id or not category:
+        print("Usage: set-category <short-id> <category>")
+        sys.exit(1)
+    entry = get_by_short_id(short_id)
+    if not entry:
+        print(f"No local hash for: {short_id}")
+        sys.exit(1)
+    content_hash = entry.get("content_hash")
+    path = get_hash_path(content_hash)
+    with open(path, encoding="utf-8") as f:
+        data = json.load(f)
+    data["category"] = category
+    name = entry.get("function_name") or entry.get("name") or ""
+    if name:
+        data["hierarchical_name"] = f"stone:{category}.{name}"
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2)
+    print(f"Category: {category}")
+    print(f"Name: {data.get('hierarchical_name', '')}")
+    print("Hash unchanged.")
 
 def hash_dir(folder: str):
     """Hash every .py in a folder that has a sibling .cases.json. Skip the rest."""
@@ -561,6 +585,9 @@ def main():
 
     elif cmd == "hash-dir":
         hash_dir(sys.argv[2] if len(sys.argv) > 2 else "")
+
+    elif cmd == "set-category":
+        set_category(sys.argv[2] if len(sys.argv) > 2 else "", sys.argv[3] if len(sys.argv) > 3 else "")
 
     elif cmd == "list":
         entries = list_hashes()
