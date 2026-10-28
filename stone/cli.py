@@ -323,6 +323,36 @@ def hash_dir(folder: str, category: str = ""):
         if not name.endswith(".py"):
             if name.endswith(".cases.json"):
                 continue
+            if name.endswith(".c"):
+                c_job = ""
+                c_function = ""
+                with open(path, "r", encoding="utf-8") as f:
+                    for line in f:
+                        text = line.strip()
+                        if text.startswith("// stone:job "):
+                            c_job = text[len("// stone:job "):].strip()
+                        elif text.startswith("// stone:function "):
+                            c_function = text[len("// stone:function "):].strip()
+                if not c_job or not c_function:
+                    print(f"{name} Refused. No stone:job or stone:function.")
+                    failed += 1
+                    refused += 1
+                    continue
+                if not os.path.isfile(path + ".cases.json"):
+                    skipped += 1
+                    continue
+                print(f"--- {name}")
+                result = subprocess.run(
+                    [sys.executable, "-m", "stone.cli", "record-external", path, "--job", c_job, "--language", "c", "--function", c_function],
+                    capture_output=True, text=True
+                )
+                print(result.stdout, end="")
+                if result.returncode != 0:
+                    failed += 1
+                    print(result.stderr, end="")
+                    continue
+                hashed += 1
+                continue
             print(f"{name} Refused. Not Python.")
             failed += 1
             refused += 1
