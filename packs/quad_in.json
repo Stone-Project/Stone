@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.quad_in",
+  "description": "Quad_in, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.quad_in",
+    "stone:util.clamp"
+  ]
+}
