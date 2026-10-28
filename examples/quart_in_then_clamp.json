@@ -1,0 +1,8 @@
+{
+  "name": "quart_in then clamp",
+  "expect": 10,
+  "steps": [
+    {"name": "stone:math.quart_in", "args": [2]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 10], "language": "python"}
+  ]
+}
