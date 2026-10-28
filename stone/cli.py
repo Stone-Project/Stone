@@ -70,6 +70,7 @@ Commands:
   languages [file]         Show which languages have a loader and a tool
   verify-examples [files...]  Test a sequence of local files. Defaults to cased examples. Does not hash or publish.
   report <file>            Match, similar, or new. Does not hash or publish.
+  time-runs <file> <file>  Time two run files three times. Winner only if one stays ahead.
   publish <short-id>       Not enabled yet (local library only)
   packs                    List local pack files
   verify [pack-file]       Check pack jobs against the local library
@@ -245,7 +246,7 @@ def resolve_step_arg(item, previous):
         return previous
     return item
 
-def run_steps(path: str):
+def run_steps(path: str, quiet: bool = False):
     with open(path, "r", encoding="utf-8") as f:
         spec = json.load(f)
     steps = spec.get("steps") or []
@@ -253,7 +254,8 @@ def run_steps(path: str):
         print(f"No steps in {path}")
         sys.exit(1)
     previous = None
-    print(spec.get("name") or path)
+    if not quiet:
+        print(spec.get("name") or path)
     for index, step in enumerate(steps, start=1):
         name = step.get("name")
         raw_args = [resolve_step_arg(item, previous) for item in step.get("args") or []]
@@ -263,16 +265,47 @@ def run_steps(path: str):
             quiet=True,
             language=step.get("language") or "",
         )
-        print(f"{index}. {name} {raw_args} -> {previous}")
-    print(f"Final: {previous}")
+        if not quiet:
+            print(f"{index}. {name} {raw_args} -> {previous}")
+    if not quiet:
+        print(f"Final: {previous}")
     if "expect" in spec and previous != spec.get("expect"):
         print(f"Expect: {spec.get('expect')}")
         print("Run failed. Final result did not match.")
         sys.exit(1)
-    if "expect" in spec:
+    if "expect" in spec and not quiet:
         print(f"Expect: {spec.get('expect')}")
 
 
+
+def time_runs(path_a: str, path_b: str):
+    """Time two run files three times. Name a winner only if the same file stays ahead."""
+    if not path_a or not path_b:
+        print("Usage: time-runs <file> <file>")
+        sys.exit(1)
+    wins = {"a": 0, "b": 0, "tie": 0}
+    for pass_number in (1, 2, 3):
+        started = time.perf_counter()
+        run_steps(path_a, quiet=True)
+        a_ms = (time.perf_counter() - started) * 1000
+        started = time.perf_counter()
+        run_steps(path_b, quiet=True)
+        b_ms = (time.perf_counter() - started) * 1000
+        if abs(a_ms - b_ms) / max(a_ms, b_ms, 1) < 0.05:
+            mark = "tie"
+        elif a_ms < b_ms:
+            mark = "a"
+        else:
+            mark = "b"
+        wins[mark] += 1
+        print(f"Pass {pass_number}: A {a_ms:.1f} ms  B {b_ms:.1f} ms  {mark}")
+    if wins["a"] == 3:
+        print("Winner: A")
+    elif wins["b"] == 3:
+        print("Winner: B")
+    else:
+        print("Winner: tie")
+    print("One machine. Not part of the hash.")
 
 def report_file(path: str):
     """Report whether a local file matches a job, looks similar, or is new. Does not hash or publish."""
@@ -616,6 +649,9 @@ def main():
 
     elif cmd == "report":
         report_file(sys.argv[2] if len(sys.argv) > 2 else "")
+
+    elif cmd == "time-runs":
+        time_runs(sys.argv[2] if len(sys.argv) > 2 else "", sys.argv[3] if len(sys.argv) > 3 else "")
 
     elif cmd == "languages":
         for line in describe_languages():
