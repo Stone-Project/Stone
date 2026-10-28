@@ -1,0 +1,8 @@
+{
+  "name": "approach then heal",
+  "expect": 15,
+  "steps": [
+    {"name": "stone:math.approach", "args": [0, 10, 3]},
+    {"name": "stone:health.heal", "args": ["$prev", 12, 100]}
+  ]
+}
