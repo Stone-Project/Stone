@@ -9,6 +9,7 @@ import hashlib
 import importlib.util
 import traceback
 import subprocess
+import shutil
 from .hasher.parser import parse_file
 from .hasher.normalizer import normalize
 from .hasher.tester import run_basic_tests, is_safe_for_hashing
@@ -313,6 +314,8 @@ def hash_dir(folder: str, category: str = ""):
     skipped = 0
     failed = 0
     refused = 0
+    shelf = os.path.join(os.path.dirname(get_hash_path("0" * 16)), "_untested")
+    os.makedirs(shelf, exist_ok=True)
     for name in sorted(os.listdir(folder)):
         path = os.path.join(folder, name)
         if not os.path.isfile(path):
@@ -350,6 +353,16 @@ def hash_dir(folder: str, category: str = ""):
             failed += 1
             print(report.stdout, end="")
             continue
+        parsed = parse_file(path)
+        if parsed:
+            results = run_basic_tests(parsed["code"], parsed["function_name"], path)
+            if results["passed"] < results["total"]:
+                short = generate_content_hash(normalize(parsed["code"]))[:16]
+                shutil.copyfile(path, os.path.join(shelf, short + ".py"))
+                shutil.copyfile(cases, os.path.join(shelf, short + ".cases.json"))
+                print(f"{name} Untested. Saved to shelf.")
+                failed += 1
+                continue
         argv = [sys.executable, "-m", "stone.cli", "hash-function", path]
         if category:
             argv += ["--category", category]
