@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.cubic_in",
+  "description": "Cubic_in, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.cubic_in",
+    "stone:util.clamp"
+  ]
+}

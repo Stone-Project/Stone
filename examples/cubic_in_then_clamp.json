@@ -1,0 +1,8 @@
+{
+  "name": "cubic_in then clamp",
+  "expect": 5,
+  "steps": [
+    {"name": "stone:math.cubic_in", "args": [2]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 5], "language": "python"}
+  ]
+}
