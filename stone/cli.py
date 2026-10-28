@@ -297,6 +297,23 @@ def hash_dir(folder: str):
             skipped += 1
             continue
         print(f"--- {name}")
+        report = subprocess.run(
+            [sys.executable, "-m", "stone.cli", "report", path],
+            capture_output=True, text=True
+        )
+        if report.returncode != 0:
+            failed += 1
+            print(report.stdout, end="")
+            print(report.stderr, end="")
+            continue
+        if "MATCH" in report.stdout:
+            print("MATCH, skipped")
+            skipped += 1
+            continue
+        if "NEW" not in report.stdout and "SIMILAR" not in report.stdout:
+            failed += 1
+            print(report.stdout, end="")
+            continue
         result = subprocess.run(
             [sys.executable, "-m", "stone.cli", "hash-function", path],
             capture_output=True, text=True
