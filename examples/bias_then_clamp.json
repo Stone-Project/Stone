@@ -1,0 +1,8 @@
+{
+  "name": "bias then clamp",
+  "expect": 0.125,
+  "steps": [
+    {"name": "stone:math.bias", "args": [0.5, 0.25]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 0.125], "language": "python"}
+  ]
+}
