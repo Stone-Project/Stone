@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.saw",
+  "description": "Saw, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.saw",
+    "stone:util.clamp"
+  ]
+}

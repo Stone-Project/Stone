@@ -1,0 +1,8 @@
+{
+  "name": "saw then clamp",
+  "expect": 0.5,
+  "steps": [
+    {"name": "stone:math.saw", "args": [3.75]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 0.5], "language": "python"}
+  ]
+}
