@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.hash01",
+  "description": "Hash01, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.hash01",
+    "stone:util.clamp"
+  ]
+}
