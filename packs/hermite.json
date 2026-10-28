@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.hermite",
+  "description": "Hermite, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.hermite",
+    "stone:util.clamp"
+  ]
+}
