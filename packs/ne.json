@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.ne",
+  "description": "Ne, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.ne",
+    "stone:util.clamp"
+  ]
+}

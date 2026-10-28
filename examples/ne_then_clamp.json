@@ -1,0 +1,8 @@
+{
+  "name": "ne then clamp",
+  "expect": 0.5,
+  "steps": [
+    {"name": "stone:math.ne", "args": [3, 4]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 0.5], "language": "python"}
+  ]
+}
