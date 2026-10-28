@@ -1,0 +1,8 @@
+{
+  "name": "quad_in_out then clamp",
+  "expect": 0.5,
+  "steps": [
+    {"name": "stone:math.quad_in_out", "args": [0.75]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 0.5], "language": "python"}
+  ]
+}
