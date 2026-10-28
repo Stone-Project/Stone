@@ -1,0 +1,5 @@
+[
+  {"args": [-3], "expect": -1},
+  {"args": [0], "expect": 0},
+  {"args": [4], "expect": 1}
+]
