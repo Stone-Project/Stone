@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.inverse_lerp",
+  "description": "Inverse_lerp, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.inverse_lerp",
+    "stone:util.clamp"
+  ]
+}
