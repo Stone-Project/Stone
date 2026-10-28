@@ -1,0 +1,8 @@
+{
+  "name": "diff then clamp",
+  "expect": 5,
+  "steps": [
+    {"name": "stone:math.diff", "args": [2, 9]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 5], "language": "python"}
+  ]
+}
