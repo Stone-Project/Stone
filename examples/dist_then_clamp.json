@@ -1,0 +1,8 @@
+{
+  "name": "dist then clamp",
+  "expect": 5.0,
+  "steps": [
+    {"name": "stone:math.dist", "args": [0, 0, 3, 4]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 10], "language": "python"}
+  ]
+}
