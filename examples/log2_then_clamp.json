@@ -1,0 +1,8 @@
+{
+  "name": "log2 then clamp",
+  "expect": 2,
+  "steps": [
+    {"name": "stone:math.log2", "args": [8]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 2], "language": "python"}
+  ]
+}
