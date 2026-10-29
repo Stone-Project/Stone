@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.hypot4",
+  "description": "Hypot4, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.hypot4",
+    "stone:util.clamp"
+  ]
+}
