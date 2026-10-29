@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.log10",
+  "description": "Log10, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.log10",
+    "stone:util.clamp"
+  ]
+}
