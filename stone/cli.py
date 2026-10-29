@@ -10,6 +10,9 @@ import importlib.util
 import traceback
 import subprocess
 import shutil
+import re
+import io
+import contextlib
 from .hasher.parser import parse_file
 from .hasher.normalizer import normalize
 from .hasher.tester import run_basic_tests, is_safe_for_hashing
@@ -588,6 +591,15 @@ def time_runs(path_a: str, path_b: str):
         print("Winner: tie")
     print("One machine. Not part of the hash.")
 
+def body_key(code: str, function_name: str) -> str:
+    """Normalized body with the function's own name blanked out. Used only by report."""
+    with contextlib.redirect_stdout(io.StringIO()):
+        body = normalize(code)
+    if not function_name:
+        return body
+    return re.sub(r"\b" + re.escape(function_name) + r"\b", "_fn_", body)
+
+
 def report_file(path: str):
     """Report whether a local file matches a job, looks similar, or is new. Does not hash or publish."""
     if not path:
@@ -608,21 +620,40 @@ def report_file(path: str):
         sys.exit(1)
     name = parsed["function_name"]
     category = guess_category(name, path, parsed["code"])
-    exact = find_backends(name)
-    similar = [item for item in search_by_intent(name.replace("_", " ")) if item.get("function_name") != name]
+    with contextlib.redirect_stdout(io.StringIO()):
+        normalized = normalize(parsed["code"])
+    same_body = get_by_short_id(generate_content_hash(normalized)[:16])
+    exact = [same_body] if same_body else find_backends(name)
+    key = body_key(parsed["code"], name)
+    similar = []
+    for item in list_hashes():
+        other = item.get("function_name") or ""
+        source = item.get("source_file") or ""
+        if other == name or not source or not os.path.isfile(source):
+            continue
+        try:
+            with open(source, "r", encoding="utf-8") as f:
+                text = f.read()
+        except Exception:
+            continue
+        if body_key(text, other) == key:
+            similar.append(item)
     print(f"File:     {path}")
     print(f"Function: {name}")
     print(f"Guess:    {category}")
     if exact:
         entry = exact[0]
         print(f"MATCH     {entry.get('hierarchical_name') or entry.get('job')}  {entry.get('short_id')}  {entry.get('status')}")
-        print("Same function name is already in the local library. Do not add a second job.")
+        if same_body:
+            print("Same normalized body is already in the local library. Do not add a second job.")
+        else:
+            print("Same function name is already in the local library. Do not add a second job.")
         return
     if similar:
         print("SIMILAR")
         for entry in similar[:5]:
             print(f"  {entry.get('hierarchical_name') or entry.get('function_name')}  {entry.get('short_id')}")
-        print("Looks related. Review before hashing. Do not file as verified.")
+        print("Same body under another name. Review before hashing. Do not file as verified.")
         return
     print("NEW")
     print(f"No local job named {name}. Proposed category: {category}.")
