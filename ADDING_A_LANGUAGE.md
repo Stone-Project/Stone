@@ -40,6 +40,14 @@ record-external can note a pass before the caller exists. Status verified_extern
 
 The new caller does not rewrite old hashes. Same normalized body keeps the same hash. A new language is another backend on the same job.
 
+Order and no favor
+
+Order for a new language is cases, then loader, then auto-hash.
+
+No language is favored. A loader is added when the language has backends that pass the same cases. Until then it is refused.
+
+hash-dir only sorts files that already have a loader and cases. It does not create either.
+
 What not to do
 
 - Do not scrape the web for an implementation.
