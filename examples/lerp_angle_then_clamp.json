@@ -1,0 +1,8 @@
+{
+  "name": "lerp_angle then clamp",
+  "expect": 0.25,
+  "steps": [
+    {"name": "stone:math.lerp_angle", "args": [0, 1, 0.5]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 0.25], "language": "python"}
+  ]
+}
