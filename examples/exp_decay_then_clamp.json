@@ -1,0 +1,8 @@
+{
+  "name": "exp_decay then clamp",
+  "expect": 2,
+  "steps": [
+    {"name": "stone:math.exp_decay", "args": [10, 0.5, 2]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 2], "language": "python"}
+  ]
+}
