@@ -1,0 +1,8 @@
+{
+  "name": "rad_norm then clamp",
+  "expect": 0.5,
+  "steps": [
+    {"name": "stone:math.rad_norm", "args": [7]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 0.5], "language": "python"}
+  ]
+}
