@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.radians",
+  "description": "Radians, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.radians",
+    "stone:util.clamp"
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "name": "radians then clamp",
+  "expect": 3,
+  "steps": [
+    {"name": "stone:math.radians", "args": [180]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 3], "language": "python"}
+  ]
+}
