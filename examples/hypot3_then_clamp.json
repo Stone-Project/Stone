@@ -1,0 +1,8 @@
+{
+  "name": "hypot3 then clamp",
+  "expect": 5,
+  "steps": [
+    {"name": "stone:math.hypot3", "args": [2, 3, 6]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 5], "language": "python"}
+  ]
+}
