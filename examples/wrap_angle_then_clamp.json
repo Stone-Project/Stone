@@ -1,0 +1,8 @@
+{
+  "name": "wrap_angle then clamp",
+  "expect": 0.5,
+  "steps": [
+    {"name": "stone:math.wrap_angle", "args": [7]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 0.5], "language": "python"}
+  ]
+}
