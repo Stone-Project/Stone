@@ -1,0 +1,8 @@
+{
+  "name": "deg_norm then clamp",
+  "expect": 300,
+  "steps": [
+    {"name": "stone:math.deg_norm", "args": [-10]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 300], "language": "python"}
+  ]
+}

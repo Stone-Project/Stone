@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.deg_norm",
+  "description": "Deg norm, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.deg_norm",
+    "stone:util.clamp"
+  ]
+}
