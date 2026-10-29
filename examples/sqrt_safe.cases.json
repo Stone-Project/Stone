@@ -1,0 +1,9 @@
+[
+  {"args": [0], "expect": 0.0},
+  {"args": [4], "expect": 2.0},
+  {"args": [2], "expect": 1.4142135623730951},
+  {"args": [0.25], "expect": 0.5},
+  {"args": [1000000], "expect": 1000.0},
+  {"args": [-1], "expect": null},
+  {"args": [-0.0001], "expect": null}
+]
