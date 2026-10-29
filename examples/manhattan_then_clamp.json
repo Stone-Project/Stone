@@ -1,0 +1,8 @@
+{
+  "name": "manhattan then clamp",
+  "expect": 5,
+  "steps": [
+    {"name": "stone:math.manhattan", "args": [0, 0, 3, 4]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 5], "language": "python"}
+  ]
+}
