@@ -1,0 +1,8 @@
+{
+  "name": "degrees then clamp",
+  "expect": 90,
+  "steps": [
+    {"name": "stone:math.degrees", "args": [3.141592653589793]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 90], "language": "python"}
+  ]
+}
