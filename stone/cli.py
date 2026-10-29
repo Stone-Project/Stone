@@ -775,7 +775,7 @@ def main():
             normalized = normalize(code)
             test_results = run_basic_tests(code, function_name, filepath)
 
-            if not is_safe_for_hashing(test_results):
+            if not is_safe_for_hashing(test_results) or test_results["passed"] < test_results["total"]:
                 print("Function failed enough tests — not hashing yet.")
                 for detail in test_results.get("details", []):
                     print(f"   {detail}")
