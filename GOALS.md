@@ -103,6 +103,36 @@ Actor-Director is a separate project. It may choose Stone jobs later. It is not 
 - It is currently refused with "Zig loader not implemented yet."
 - The C, Python, and Rust paths are unchanged.
 
+## Decisions (2026-10-29)
+
+### Auto-hasher
+- The auto-hasher is next. It takes the friction out of the hash step.
+- Cases and verify stay manual.
+- It is additive only.
+- The same normalized body keeps the same content hash.
+- Existing entries are not rehashed.
+- Similar hashes are not merged automatically.
+- It does not scrape.
+- A new hash version comes only if the normalization rules change.
+
+### Pure jobs only
+- Stone is for pure jobs.
+- File reads, database writes, API calls, time, and randomness are out of scope for the current verification model.
+- Impure jobs can be added later under a different protocol.
+
+### Docs after the auto-hasher
+- A one-sentence pitch at the top of the README.
+- The pure-function limit.
+- A short first-job walkthrough.
+- An honest bench note. Small functions can lose to FFI overhead. Larger jobs or batch calls can reverse it.
+- The human walkthrough and the AI walkthrough come after the auto-hasher is working.
+
+### Catalog
+- 118 Python jobs are local, with cases, chains, and packs.
+- C has a few verified backends.
+- Other languages are refused until loaders exist.
+- The practical target before public contributions is a few hundred solid jobs overall, not per language.
+- Each language should have at least some verified backends before a public release or a Doom demo on weak hardware.
 ## Not built
 
 - An auto hasher. Hash by hand until then.
