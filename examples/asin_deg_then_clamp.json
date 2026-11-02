@@ -1,0 +1,8 @@
+{
+  "name": "asin_deg then clamp",
+  "expect": 45,
+  "steps": [
+    {"name": "stone:math.asin_deg", "args": [1]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 45], "language": "python"}
+  ]
+}

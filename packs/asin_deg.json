@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.asin_deg",
+  "description": "Asin deg, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.asin_deg",
+    "stone:util.clamp"
+  ]
+}
