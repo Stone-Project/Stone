@@ -1,0 +1,8 @@
+{
+  "name": "acos_deg then clamp",
+  "expect": 90,
+  "steps": [
+    {"name": "stone:math.acos_deg", "args": [-1]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 90], "language": "python"}
+  ]
+}
