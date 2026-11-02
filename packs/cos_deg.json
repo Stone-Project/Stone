@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.cos_deg",
+  "description": "Cos deg, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.cos_deg",
+    "stone:util.clamp"
+  ]
+}
