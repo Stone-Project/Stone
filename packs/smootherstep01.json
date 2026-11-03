@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.smootherstep01",
+  "description": "Smootherstep01, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.smootherstep01",
+    "stone:util.clamp"
+  ]
+}
