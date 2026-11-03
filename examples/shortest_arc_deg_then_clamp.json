@@ -1,0 +1,8 @@
+{
+  "name": "shortest_arc_deg then clamp",
+  "expect": 15,
+  "steps": [
+    {"name": "stone:math.shortest_arc_deg", "args": [350, 10]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 15], "language": "python"}
+  ]
+}

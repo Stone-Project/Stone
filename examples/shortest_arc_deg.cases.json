@@ -1,0 +1,10 @@
+[
+  {"args": [0, 90], "expect": 90},
+  {"args": [90, 0], "expect": -90},
+  {"args": [0, 180], "expect": 180},
+  {"args": [180, 0], "expect": 180},
+  {"args": [350, 10], "expect": 20},
+  {"args": [10, 350], "expect": -20},
+  {"args": [0, 360], "expect": 0},
+  {"args": [-170, 170], "expect": -20}
+]
