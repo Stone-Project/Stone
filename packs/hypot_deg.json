@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.hypot_deg",
+  "description": "Hypot deg, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.hypot_deg",
+    "stone:util.clamp"
+  ]
+}
