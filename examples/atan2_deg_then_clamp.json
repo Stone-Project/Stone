@@ -1,0 +1,8 @@
+{
+  "name": "atan2_deg then clamp",
+  "expect": 30,
+  "steps": [
+    {"name": "stone:math.atan2_deg", "args": [1, 1]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 30], "language": "python"}
+  ]
+}

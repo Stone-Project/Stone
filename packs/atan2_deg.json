@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.atan2_deg",
+  "description": "Atan2 deg, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.atan2_deg",
+    "stone:util.clamp"
+  ]
+}
