@@ -1,0 +1,8 @@
+{
+  "name": "smoothstep01 then clamp",
+  "expect": 0.25,
+  "steps": [
+    {"name": "stone:math.smoothstep01", "args": [0.5]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 0.25], "language": "python"}
+  ]
+}
