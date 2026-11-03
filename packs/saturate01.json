@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.saturate01",
+  "description": "Saturate01, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.saturate01",
+    "stone:util.clamp"
+  ]
+}
