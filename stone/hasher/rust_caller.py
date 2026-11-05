@@ -22,7 +22,12 @@ def load_rust(source_file: str, function_name: str, arg_count: int):
     command = [rustc, "--crate-type", "cdylib", "-O", "-o", dll_path, source_file]
     built = subprocess.run(command, capture_output=True, text=True)
     if built.returncode != 0:
-        raise RuntimeError((built.stderr or built.stdout or "Rust compile failed").strip())
+        # Windows may lock a prior DLL; fall back to a unique output path.
+        dll_path = os.path.join(build_dir, f"stone_rs_{safe}_{os.getpid()}.dll")
+        command = [rustc, "--crate-type", "cdylib", "-O", "-o", dll_path, source_file]
+        built = subprocess.run(command, capture_output=True, text=True)
+        if built.returncode != 0:
+            raise RuntimeError((built.stderr or built.stdout or "Rust compile failed").strip())
     import ctypes
     lib = ctypes.CDLL(dll_path)
     fn = getattr(lib, function_name)
