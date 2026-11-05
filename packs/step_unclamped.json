@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.step_unclamped",
+  "description": "Step unclamped, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.step_unclamped",
+    "stone:util.clamp"
+  ]
+}
