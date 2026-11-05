@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.mix_safe",
+  "description": "Mix safe, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.mix_safe",
+    "stone:util.clamp"
+  ]
+}
