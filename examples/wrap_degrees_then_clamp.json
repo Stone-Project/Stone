@@ -1,0 +1,8 @@
+{
+  "name": "wrap_degrees then clamp",
+  "expect": 45,
+  "steps": [
+    {"name": "stone:math.wrap_degrees", "args": [450]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 45], "language": "python"}
+  ]
+}

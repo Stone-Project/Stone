@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.wrap_degrees",
+  "description": "Wrap degrees, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.wrap_degrees",
+    "stone:util.clamp"
+  ]
+}
