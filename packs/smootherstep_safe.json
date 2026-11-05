@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.smootherstep_safe",
+  "description": "Smootherstep safe, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.smootherstep_safe",
+    "stone:util.clamp"
+  ]
+}
