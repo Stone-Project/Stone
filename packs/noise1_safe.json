@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.noise1_safe",
+  "description": "Noise1 safe, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.noise1_safe",
+    "stone:util.clamp"
+  ]
+}
