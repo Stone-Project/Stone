@@ -1,0 +1,8 @@
+{
+  "name": "remap_unclamped then clamp",
+  "expect": 100,
+  "steps": [
+    {"name": "stone:math.remap_unclamped", "args": [15, 0, 10, 0, 100]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 100], "language": "python"}
+  ]
+}

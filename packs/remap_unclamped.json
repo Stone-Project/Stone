@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.remap_unclamped",
+  "description": "Remap unclamped, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.remap_unclamped",
+    "stone:util.clamp"
+  ]
+}
