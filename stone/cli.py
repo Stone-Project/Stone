@@ -4,6 +4,7 @@
 import sys
 import os
 import json
+import math
 import time
 import hashlib
 import importlib.util
@@ -211,7 +212,7 @@ def call_hash(name: str, raw_args: list, quiet: bool = False, backend: str = "",
                 args = [parse_call_arg(item) for item in raw_args]
                 result = call_rust(external.get("source_file"), external.get("function_name"), args)
                 expected = expected_for_rs(external.get("source_file"), args)
-                if expected is not None and result != expected:
+                if expected is not None and not rust_values_equal(result, expected):
                     print(f"Rust result {result} did not match expected {expected}")
                     sys.exit(1)
                 if not quiet:
@@ -262,6 +263,16 @@ def expected_for_c(source, args):
         if case.get("args") == args:
             return case.get("expect")
     return None
+
+
+def rust_values_equal(result, expected):
+    """Exact match for ints; allow tiny float noise between Python cases and libm."""
+    if result == expected:
+        return True
+    try:
+        return math.isclose(float(result), float(expected), rel_tol=0.0, abs_tol=1e-12)
+    except (TypeError, ValueError):
+        return False
 
 def expected_for_rs(source, args):
     if not source or not source.endswith(".rs"):
