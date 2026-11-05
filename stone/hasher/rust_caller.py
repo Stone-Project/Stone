@@ -5,11 +5,22 @@ import time
 _loaded = {}
 
 
+def _uses_float_abi(source_file: str) -> bool:
+    """Float backends use f64/f32 in the Rust source; int backends keep i32."""
+    try:
+        with open(source_file, "r", encoding="utf-8") as f:
+            text = f.read()
+    except OSError:
+        return False
+    return "f64" in text or "f32" in text
+
+
 def load_rust(source_file: str, function_name: str, arg_count: int):
     """Compile once and return a callable. Does not download a compiler."""
     if not source_file or not os.path.isfile(source_file):
         raise FileNotFoundError(f"Rust source not found: {source_file}")
-    key = (os.path.abspath(source_file), function_name, arg_count)
+    use_float = _uses_float_abi(source_file)
+    key = (os.path.abspath(source_file), function_name, arg_count, use_float)
     if key in _loaded:
         return _loaded[key]
     rustc = find_rustc()
@@ -31,14 +42,24 @@ def load_rust(source_file: str, function_name: str, arg_count: int):
     import ctypes
     lib = ctypes.CDLL(dll_path)
     fn = getattr(lib, function_name)
-    fn.restype = ctypes.c_int
-    fn.argtypes = [ctypes.c_int] * arg_count
-    _loaded[key] = fn
-    return fn
+    if use_float:
+        fn.restype = ctypes.c_double
+        fn.argtypes = [ctypes.c_double] * arg_count
+    else:
+        fn.restype = ctypes.c_int
+        fn.argtypes = [ctypes.c_int] * arg_count
+    _loaded[key] = (fn, use_float)
+    return _loaded[key]
 
 
 def call_rust(source_file: str, function_name: str, args: list):
-    fn = load_rust(source_file, function_name, len(args))
+    fn, use_float = load_rust(source_file, function_name, len(args))
+    if use_float:
+        result = float(fn(*[float(item) for item in args]))
+        # Match JSON int expects when the float is a whole number.
+        if result.is_integer() and abs(result) < 2**53:
+            return int(result)
+        return result
     return int(fn(*[int(item) for item in args]))
 
 
@@ -47,8 +68,11 @@ def time_rust(source_file: str, function_name: str, cases: list):
     if not cases:
         return None
     arg_count = len(cases[0].get("args") or [])
-    fn = load_rust(source_file, function_name, arg_count)
-    prepared = [[int(item) for item in case.get("args") or []] for case in cases]
+    fn, use_float = load_rust(source_file, function_name, arg_count)
+    if use_float:
+        prepared = [[float(item) for item in case.get("args") or []] for case in cases]
+    else:
+        prepared = [[int(item) for item in case.get("args") or []] for case in cases]
     for args in prepared:
         fn(*args)
     loops = 300
