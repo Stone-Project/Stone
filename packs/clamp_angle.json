@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.clamp_angle",
+  "description": "Clamp angle, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.clamp_angle",
+    "stone:util.clamp"
+  ]
+}
