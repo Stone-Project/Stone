@@ -1,0 +1,8 @@
+{
+  "name": "log2_safe then clamp",
+  "expect": 8,
+  "steps": [
+    {"name": "stone:math.log2_safe", "args": [1024]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 8], "language": "python"}
+  ]
+}
