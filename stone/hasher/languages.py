@@ -6,7 +6,7 @@ import shutil
 LANGUAGES = [
     {"language": "python", "extensions": [".py"], "tools": ["python"], "loader": True},
     {"language": "c", "extensions": [".c", ".h"], "tools": ["gcc", "clang"], "loader": True},
-    {"language": "rust", "extensions": [".rs"], "tools": ["rustc"], "loader": False},
+    {"language": "rust", "extensions": [".rs"], "tools": ["rustc"], "loader": True},
     {"language": "go", "extensions": [".go"], "tools": ["go"], "loader": False},
 ]
 

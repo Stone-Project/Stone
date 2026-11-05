@@ -19,6 +19,7 @@ from .hasher.tester import run_basic_tests, is_safe_for_hashing
 from .hasher.library import save_hash, save_external, list_hashes, get_by_short_id, delete_hash, search_by_intent, decide_status, find_by_name, find_backends, get_hash_path
 from .hasher.categorize import guess_category
 from .hasher.c_caller import call_c, time_c, find_gcc, load_c
+from .hasher.rust_caller import call_rust, time_rust, find_rustc, load_rust
 from .hasher.languages import describe_languages, admit_source
 
 def generate_content_hash(normalized_code: str) -> str:
@@ -206,6 +207,22 @@ def call_hash(name: str, raw_args: list, quiet: bool = False, backend: str = "",
                     if expected is not None:
                         print(f"Expect: {expected}")
                 return result
+            if str(external.get("language", "")).lower() == "rust":
+                args = [parse_call_arg(item) for item in raw_args]
+                result = call_rust(external.get("source_file"), external.get("function_name"), args)
+                expected = expected_for_rs(external.get("source_file"), args)
+                if expected is not None and result != expected:
+                    print(f"Rust result {result} did not match expected {expected}")
+                    sys.exit(1)
+                if not quiet:
+                    print(f"Job:    {external.get('job')}")
+                    print(f"Language: rust")
+                    print(f"Name:   {external.get('function_name')}")
+                    print(f"Source: {external.get('source_file')}")
+                    print(f"Result: {result}")
+                    if expected is not None:
+                        print(f"Expect: {expected}")
+                return result
             print(f"Cases passed for {external.get('job')} ({external.get('language')}), but the caller cannot run this language yet.")
             print(f"Source: {external.get('source_file')}")
             sys.exit(1)
@@ -245,6 +262,23 @@ def expected_for_c(source, args):
         if case.get("args") == args:
             return case.get("expect")
     return None
+
+def expected_for_rs(source, args):
+    if not source or not source.endswith(".rs"):
+        return None
+    case_path = source + ".cases.json"
+    if not os.path.isfile(case_path):
+        return None
+    try:
+        with open(case_path, "r", encoding="utf-8") as f:
+            cases = json.load(f)
+    except Exception:
+        return None
+    for case in cases:
+        if case.get("args") == args:
+            return case.get("expect")
+    return None
+
 
 def resolve_step_arg(item, previous):
     if item == "$prev":
@@ -424,8 +458,24 @@ def hash_dir(folder: str, category: str = "", job: str = "", intent: str = ""):
                     print(f"{name} Rust cases failed.")
                     failed += 1
                     continue
-                print(f"{name} Rust cases passed. Loader not recording yet.")
-                skipped += 1
+                print(f"{name} Rust cases passed.")
+                rs_match = next((e for e in list_hashes() if (e.get("language") or "").lower() == "rust" and e.get("job") == rs_job and e.get("function_name") == rs_function), None)
+                if rs_match:
+                    print(f"{name} MATCH. Already recorded as {rs_match.get('short_id')}.")
+                    skipped += 1
+                    continue
+                recorded = subprocess.run(
+                    [sys.executable, "-m", "stone.cli", "record-external", path, "--job", rs_job, "--language", "rust", "--function", rs_function],
+                    capture_output=True,
+                    text=True,
+                )
+                print(recorded.stdout, end="")
+                if recorded.returncode != 0:
+                    print(recorded.stderr, end="")
+                    print(f"{name} record-external failed.")
+                    failed += 1
+                    continue
+                hashed += 1
                 continue
             if name.endswith(".c"):
                 c_job = ""
@@ -1009,6 +1059,8 @@ def main():
         print(f"Saved to: {path}")
         if language.lower() == "c":
             print("C can be called if gcc is on PATH. This entry stays local.")
+        elif language.lower() == "rust":
+            print("Rust can be called if rustc is on PATH. This entry stays local.")
         else:
             print("This entry is not callable. The caller does not run this language yet.")
 
