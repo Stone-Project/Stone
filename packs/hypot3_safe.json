@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.hypot3_safe",
+  "description": "Hypot3 safe, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.hypot3_safe",
+    "stone:util.clamp"
+  ]
+}
