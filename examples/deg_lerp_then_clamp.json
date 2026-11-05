@@ -1,0 +1,8 @@
+{
+  "name": "deg_lerp then clamp",
+  "expect": 180,
+  "steps": [
+    {"name": "stone:math.deg_lerp", "args": [350, 10, 0.5]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 180], "language": "python"}
+  ]
+}

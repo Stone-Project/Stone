@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.deg_lerp",
+  "description": "Deg lerp, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.deg_lerp",
+    "stone:util.clamp"
+  ]
+}
