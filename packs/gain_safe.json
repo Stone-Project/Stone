@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.gain_safe",
+  "description": "Gain safe, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.gain_safe",
+    "stone:util.clamp"
+  ]
+}
