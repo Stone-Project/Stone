@@ -1,0 +1,83 @@
+[
+  {
+    "args": [
+      0,
+      0,
+      3,
+      4
+    ],
+    "expect": 5.0
+  },
+  {
+    "args": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "expect": 0.0
+  },
+  {
+    "args": [
+      -1,
+      -1,
+      2,
+      3
+    ],
+    "expect": 5.0
+  },
+  {
+    "args": [
+      0,
+      0,
+      0,
+      5
+    ],
+    "expect": 5.0
+  },
+  {
+    "args": [
+      0,
+      0,
+      1,
+      1
+    ],
+    "expect": 1.4142135623730951
+  },
+  {
+    "args": [
+      null,
+      0,
+      3,
+      4
+    ],
+    "expect": null
+  },
+  {
+    "args": [
+      0,
+      0,
+      Infinity,
+      0
+    ],
+    "expect": null
+  },
+  {
+    "args": [
+      0,
+      NaN,
+      1,
+      1
+    ],
+    "expect": null
+  },
+  {
+    "args": [
+      0,
+      0,
+      -Infinity,
+      0
+    ],
+    "expect": null
+  }
+]
