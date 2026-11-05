@@ -1,0 +1,8 @@
+{
+  "name": "damp_safe then clamp",
+  "expect": 5,
+  "steps": [
+    {"name": "stone:math.damp_safe", "args": [0, 10, 1, 1]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 5], "language": "python"}
+  ]
+}
