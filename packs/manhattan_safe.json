@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.manhattan_safe",
+  "description": "Manhattan safe, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.manhattan_safe",
+    "stone:util.clamp"
+  ]
+}
