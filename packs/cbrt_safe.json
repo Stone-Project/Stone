@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.cbrt_safe",
+  "description": "Cbrt safe, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.cbrt_safe",
+    "stone:util.clamp"
+  ]
+}
