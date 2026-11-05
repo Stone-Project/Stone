@@ -1,0 +1,74 @@
+[
+  {
+    "args": [
+      0,
+      10,
+      0
+    ],
+    "expect": 0
+  },
+  {
+    "args": [
+      0,
+      10,
+      1
+    ],
+    "expect": 10
+  },
+  {
+    "args": [
+      0,
+      10,
+      0.5
+    ],
+    "expect": 5.0
+  },
+  {
+    "args": [
+      2,
+      6,
+      0.25
+    ],
+    "expect": 3.0
+  },
+  {
+    "args": [
+      10,
+      0,
+      0.5
+    ],
+    "expect": 5.0
+  },
+  {
+    "args": [
+      0,
+      10,
+      Infinity
+    ],
+    "expect": null
+  },
+  {
+    "args": [
+      NaN,
+      10,
+      0.5
+    ],
+    "expect": null
+  },
+  {
+    "args": [
+      0,
+      -Infinity,
+      0.5
+    ],
+    "expect": null
+  },
+  {
+    "args": [
+      0,
+      10,
+      NaN
+    ],
+    "expect": null
+  }
+]
