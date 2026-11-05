@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.exp_decay_safe",
+  "description": "Exp decay safe, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.exp_decay_safe",
+    "stone:util.clamp"
+  ]
+}
