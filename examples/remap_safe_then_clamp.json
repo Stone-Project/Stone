@@ -1,0 +1,8 @@
+{
+  "name": "remap_safe then clamp",
+  "expect": 40,
+  "steps": [
+    {"name": "stone:math.remap_safe", "args": [5, 0, 10, 0, 100]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 40], "language": "python"}
+  ]
+}
