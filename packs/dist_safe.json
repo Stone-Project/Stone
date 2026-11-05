@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.dist_safe",
+  "description": "Dist safe, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.dist_safe",
+    "stone:util.clamp"
+  ]
+}
