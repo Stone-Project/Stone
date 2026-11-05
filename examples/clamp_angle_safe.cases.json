@@ -1,0 +1,13 @@
+[
+  {"args": [10, 350, 30], "expect": 10},
+  {"args": [90, 350, 30], "expect": 30},
+  {"args": [300, 350, 30], "expect": 350},
+  {"args": [0, 0, 90], "expect": 0},
+  {"args": [45, 0, 90], "expect": 45},
+  {"args": [180, 0, 90], "expect": 90},
+  {"args": [-10, 0, 90], "expect": 0},
+  {"args": [370, 0, 90], "expect": 10},
+  {"args": [Infinity, 0, 90], "expect": null},
+  {"args": [45, NaN, 90], "expect": null},
+  {"args": [45, 0, -Infinity], "expect": null}
+]

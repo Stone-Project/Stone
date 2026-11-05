@@ -1,0 +1,8 @@
+{
+  "name": "clamp_angle_safe then clamp",
+  "expect": 30,
+  "steps": [
+    {"name": "stone:math.clamp_angle_safe", "args": [45, 0, 90]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 30], "language": "python"}
+  ]
+}
