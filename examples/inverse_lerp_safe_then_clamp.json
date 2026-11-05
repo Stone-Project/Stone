@@ -1,0 +1,8 @@
+{
+  "name": "inverse_lerp_safe then clamp",
+  "expect": 0.25,
+  "steps": [
+    {"name": "stone:math.inverse_lerp_safe", "args": [0, 10, 5]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 0.25], "language": "python"}
+  ]
+}
