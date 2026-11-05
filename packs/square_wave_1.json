@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.square_wave_1",
+  "description": "Square wave 1, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.square_wave_1",
+    "stone:util.clamp"
+  ]
+}
