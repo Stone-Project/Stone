@@ -1,0 +1,8 @@
+{
+  "name": "exp2_safe then clamp",
+  "expect": 5,
+  "steps": [
+    {"name": "stone:math.exp2_safe", "args": [3]},
+    {"name": "stone:util.clamp", "args": ["$prev", 0, 5], "language": "python"}
+  ]
+}

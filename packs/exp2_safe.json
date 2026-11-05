@@ -1,0 +1,8 @@
+{
+  "pack": "pack:math.exp2_safe",
+  "description": "Exp2 safe, then clamp. Order only. Parameters stay in the run file.",
+  "order": [
+    "stone:math.exp2_safe",
+    "stone:util.clamp"
+  ]
+}
