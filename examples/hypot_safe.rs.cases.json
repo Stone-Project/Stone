@@ -1,0 +1,58 @@
+[
+  {
+    "args": [
+      3,
+      4
+    ],
+    "expect": 5.0
+  },
+  {
+    "args": [
+      0,
+      0
+    ],
+    "expect": 0.0
+  },
+  {
+    "args": [
+      -3,
+      4
+    ],
+    "expect": 5.0
+  },
+  {
+    "args": [
+      null,
+      4
+    ],
+    "expect": null
+  },
+  {
+    "args": [
+      3,
+      null
+    ],
+    "expect": null
+  },
+  {
+    "args": [
+      Infinity,
+      1
+    ],
+    "expect": null
+  },
+  {
+    "args": [
+      1,
+      -Infinity
+    ],
+    "expect": null
+  },
+  {
+    "args": [
+      NaN,
+      1
+    ],
+    "expect": null
+  }
+]
