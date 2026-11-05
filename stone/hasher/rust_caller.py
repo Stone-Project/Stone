@@ -1,3 +1,4 @@
+import math
 import os
 import subprocess
 import time
@@ -5,22 +6,35 @@ import time
 _loaded = {}
 
 
-def _uses_float_abi(source_file: str) -> bool:
-    """Float backends use f64/f32 in the Rust source; int backends keep i32."""
+def _source_text(source_file: str) -> str:
     try:
         with open(source_file, "r", encoding="utf-8") as f:
-            text = f.read()
+            return f.read()
     except OSError:
-        return False
-    return "f64" in text or "f32" in text
+        return ""
+
+
+def _abi_kind(source_file: str) -> str:
+    """Detect ABI from the Rust source.
+
+    - bool: signature returns bool (comparisons)
+    - float: uses f64/f32 (optional NaN stands for None)
+    - int: existing i32 path
+    """
+    text = _source_text(source_file)
+    if "-> bool" in text:
+        return "bool"
+    if "f64" in text or "f32" in text:
+        return "float"
+    return "int"
 
 
 def load_rust(source_file: str, function_name: str, arg_count: int):
     """Compile once and return a callable. Does not download a compiler."""
     if not source_file or not os.path.isfile(source_file):
         raise FileNotFoundError(f"Rust source not found: {source_file}")
-    use_float = _uses_float_abi(source_file)
-    key = (os.path.abspath(source_file), function_name, arg_count, use_float)
+    kind = _abi_kind(source_file)
+    key = (os.path.abspath(source_file), function_name, arg_count, kind)
     if key in _loaded:
         return _loaded[key]
     rustc = find_rustc()
@@ -42,25 +56,61 @@ def load_rust(source_file: str, function_name: str, arg_count: int):
     import ctypes
     lib = ctypes.CDLL(dll_path)
     fn = getattr(lib, function_name)
-    if use_float:
+    if kind == "bool":
+        fn.restype = ctypes.c_bool
+        # Bool jobs with f64 params use doubles; plain i32 bool jobs stay ints.
+        text = _source_text(source_file)
+        if "f64" in text or "f32" in text:
+            fn.argtypes = [ctypes.c_double] * arg_count
+        else:
+            fn.argtypes = [ctypes.c_int] * arg_count
+    elif kind == "float":
         fn.restype = ctypes.c_double
         fn.argtypes = [ctypes.c_double] * arg_count
     else:
         fn.restype = ctypes.c_int
         fn.argtypes = [ctypes.c_int] * arg_count
-    _loaded[key] = (fn, use_float)
+    _loaded[key] = (fn, kind)
     return _loaded[key]
 
 
-def call_rust(source_file: str, function_name: str, args: list):
-    fn, use_float = load_rust(source_file, function_name, len(args))
-    if use_float:
-        result = float(fn(*[float(item) for item in args]))
-        # Match JSON int expects when the float is a whole number.
+def _encode_arg(item, kind: str):
+    if item is None:
+        if kind in ("float", "bool"):
+            return float("nan")
+        raise TypeError("None arg is only supported on float/bool Rust backends")
+    if kind == "int":
+        return int(item)
+    if kind == "bool":
+        # Match float-arg bool backends; int-arg bool backends get ints via load.
+        return float(item) if not isinstance(item, bool) else float(int(item))
+    # float
+    return float(item)
+
+
+def _decode_result(raw, kind: str):
+    if kind == "bool":
+        return bool(raw)
+    if kind == "float":
+        result = float(raw)
+        if math.isnan(result):
+            return None
         if result.is_integer() and abs(result) < 2**53:
             return int(result)
         return result
-    return int(fn(*[int(item) for item in args]))
+    return int(raw)
+
+
+def call_rust(source_file: str, function_name: str, args: list):
+    fn, kind = load_rust(source_file, function_name, len(args))
+    # For bool backends that use i32 args, encode as int.
+    if kind == "bool":
+        text = _source_text(source_file)
+        if "f64" not in text and "f32" not in text:
+            encoded = [int(item) for item in args]
+            return bool(fn(*encoded))
+    encoded = [_encode_arg(item, kind) for item in args]
+    return _decode_result(fn(*encoded), kind)
 
 
 def time_rust(source_file: str, function_name: str, cases: list):
@@ -68,11 +118,18 @@ def time_rust(source_file: str, function_name: str, cases: list):
     if not cases:
         return None
     arg_count = len(cases[0].get("args") or [])
-    fn, use_float = load_rust(source_file, function_name, arg_count)
-    if use_float:
-        prepared = [[float(item) for item in case.get("args") or []] for case in cases]
-    else:
-        prepared = [[int(item) for item in case.get("args") or []] for case in cases]
+    fn, kind = load_rust(source_file, function_name, arg_count)
+    prepared = []
+    for case in cases:
+        args = case.get("args") or []
+        if kind == "bool":
+            text = _source_text(source_file)
+            if "f64" not in text and "f32" not in text:
+                prepared.append([int(item) for item in args])
+            else:
+                prepared.append([_encode_arg(item, kind) for item in args])
+        else:
+            prepared.append([_encode_arg(item, kind) for item in args])
     for args in prepared:
         fn(*args)
     loops = 300
